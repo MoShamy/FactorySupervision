@@ -1,0 +1,6 @@
+tf-venv
+.python-version
+__pycache__
+vidDatasets
+*.pyc
+*.pt
