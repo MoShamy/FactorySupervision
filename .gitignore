@@ -3,5 +3,9 @@ tf-venv
 __pycache__
 vidDatasets
 *.pyc
-.pt
+yolov8m.pt
 .DS_Store
+.gitattributes
+yolov8l.pt
+yolov8m.pt
+yolov8n.pt

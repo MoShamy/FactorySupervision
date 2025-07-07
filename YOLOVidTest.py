@@ -5,10 +5,10 @@ import numpy as np
 import time
 
 # Load YOLOv8 model
-model = YOLO("yolov8n.pt") 
+model = YOLO("models/yolov8m.pt") 
 
 # Open video file
-video_path = "vidDatasets/test_vid_5.mp4"
+video_path = "vidDatasets/test_vid_2.mp4"
 cap = cv2.VideoCapture(video_path)
 
 # Initialize tracker
