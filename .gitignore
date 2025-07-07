@@ -3,4 +3,5 @@ tf-venv
 __pycache__
 vidDatasets
 *.pyc
-*.pt
+.pt
+.DS_Store
