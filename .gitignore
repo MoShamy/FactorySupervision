@@ -1,11 +1,9 @@
 tf-venv
 .python-version
 __pycache__
-vidDatasets
 *.pyc
-yolov8m.pt
 .DS_Store
 .gitattributes
-yolov8l.pt
-yolov8m.pt
-yolov8n.pt
+*.pt
+*.mp4
+*.mov

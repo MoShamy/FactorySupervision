@@ -8,7 +8,7 @@ import time
 model = YOLO("models/yolov8m.pt") 
 
 # Open video file
-video_path = "vidDatasets/test_vid_2.mp4"
+video_path = "testVid/test_vid_2.mp4"
 cap = cv2.VideoCapture(video_path)
 
 # Initialize tracker
