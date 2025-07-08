@@ -1,10 +1,11 @@
 import cv2
 import time
 from ultralytics import YOLO
-
+import json
+import numpy as np
 
 # Load the video
-video_path = "testVid/test_vid_2.mp4"
+video_path = "testVid/CvData-Boxes.mov"
 cap = cv2.VideoCapture(video_path)
 model = YOLO("models/yolov8m.pt") 
 
@@ -19,7 +20,12 @@ line_x = int(width * 0.5)
 
 # Initialize time and threshold for product movement would change depending on machine normal
 last_cross_time = time.time()
-cross_threshold = 3  # seconds until it says "Stopped"
+#loading calibration data
+with open('calibration.json', 'r') as f:
+    calibration_data = json.load(f)
+
+# Extract threshold from calibration data
+cross_threshold = calibration_data.get("threshold", 3)
 
 prev_centroids = []
 
@@ -29,7 +35,8 @@ while cap.isOpened():
         break
 
     # Run YOLOv8 inference
-    results = model(frame)
+
+    results = model(frame, verbose=False) 
     detections = results[0].boxes.xyxy.cpu().numpy()
 
     curr_centroids = []
@@ -45,7 +52,7 @@ while cap.isOpened():
 
         # Line crossing check (left to right)
         for pcx, pcy in prev_centroids:
-            if pcx < line_x and cx >= line_x:
+            if pcx < line_x and cx >= line_x: #Currently crossing
                 crossed_this_frame = True
                 last_cross_time = time.time()
 
@@ -57,16 +64,17 @@ while cap.isOpened():
     production_status = "Running" if time_since_last_cross < cross_threshold else "Stopped"
     color = (0, 255, 0) if production_status == "Running" else (0, 0, 255)
 
-    # Display status at thhe top-left corner
+    # Display status at the top-left corner
     cv2.putText(frame, f"Production: {production_status}", (30, 40),
                 cv2.FONT_HERSHEY_SIMPLEX, 1.2, color, 3)
 
     # Update previous centroids
     prev_centroids = curr_centroids
-    cv2.imshow("YOLOv8 Production Line Monitoring", frame)
     out.write(frame)
+    cv2.imshow("YOLOv8 + DeepSORT Tracking", frame)
+    if cv2.waitKey(21) & 0xFF == 27:  # ESC to quit
+        break
+    
 
 cap.release()
 out.release()
-
-
