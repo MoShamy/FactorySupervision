@@ -5,7 +5,7 @@ import json
 import numpy as np
 
 # Load the video
-video_path = "testVid/CvData-Boxes.mov"
+video_path = "testVid/test_vid_2.mp4"
 cap = cv2.VideoCapture(video_path)
 model = YOLO("models/yolov8m.pt") 
 
@@ -65,8 +65,10 @@ while cap.isOpened():
     color = (0, 255, 0) if production_status == "Running" else (0, 0, 255)
 
     # Display status at the top-left corner
-    cv2.putText(frame, f"Production: {production_status}", (30, 40),
-                cv2.FONT_HERSHEY_SIMPLEX, 1.2, color, 3)
+    cv2.putText(frame, f"Production: {production_status}", (30, 60),
+                cv2.FONT_HERSHEY_SIMPLEX, 2, color, 3)
+
+    cv2.putText(frame, f"Time since last object: {time_since_last_cross:.2f}", (30,120),cv2.FONT_HERSHEY_SIMPLEX, 2, color, 3)
 
     # Update previous centroids
     prev_centroids = curr_centroids
