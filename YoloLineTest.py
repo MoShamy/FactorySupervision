@@ -1,16 +1,18 @@
 import cv2
-import numpy as np
 import time
+from ultralytics import YOLO
+
 
 # Load the video
-video_path = list(uploaded.keys())[0]
+video_path = "testVid/test_vid_2.mp4"
 cap = cv2.VideoCapture(video_path)
+model = YOLO("models/yolov8m.pt") 
 
 # output video writer
 width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 fps = int(cap.get(cv2.CAP_PROP_FPS))
-out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc(*'mp4v'), fps, (width, height))
+out = cv2.VideoWriter('resultVid/output.mp4', cv2.VideoWriter_fourcc(*'mp4v'), fps, (width, height))
 
 # vertiical line position (middle of frame but can tweak it a lot)
 line_x = int(width * 0.5)
@@ -61,6 +63,7 @@ while cap.isOpened():
 
     # Update previous centroids
     prev_centroids = curr_centroids
+    cv2.imshow("YOLOv8 Production Line Monitoring", frame)
     out.write(frame)
 
 cap.release()

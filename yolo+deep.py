@@ -4,13 +4,11 @@ from ultralytics import YOLO
 from deep_sort_realtime.deepsort_tracker import DeepSort
 
 # Load YOLOv8 model
-model = YOLO("models/yolov9m.pt")  # or yolov8x.pt for higher accuracy
+model = YOLO("models/yolov8l.pt")  # or yolov8x.pt for higher accuracy
 
-# Initialize DeepSORT tracker
-tracker = DeepSort(max_age=30)
 
 # Load video
-video_path = "testVid/CvData-Boxes.mov"
+video_path = "testVid/test_vid_2.mp4"
 cap = cv2.VideoCapture(video_path)
 fps = cap.get(cv2.CAP_PROP_FPS)
 

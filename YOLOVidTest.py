@@ -12,7 +12,7 @@ video_path = "testVid/test_vid_2.mp4"
 cap = cv2.VideoCapture(video_path)
 
 # Initialize tracker
-tracker = sv.ByteTrack()  # You can switch to StrongSORT with more config
+tracker = sv.ByteTrack()  
 
 # For speed tracking
 object_speeds = {}
