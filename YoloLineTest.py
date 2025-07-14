@@ -5,9 +5,9 @@ import json
 import numpy as np
 
 # Load the video
-video_path = "testVid/test_vid_2.mp4"
+video_path = "/Users/mostafa/Desktop/FactorySupervision/Dataset/Video/test_vid_4.mp4"
 cap = cv2.VideoCapture(video_path)
-model = YOLO("models/yolov8m.pt") 
+model = YOLO("runs/detect/train6/weights/best.pt") 
 
 # output video writer
 width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
