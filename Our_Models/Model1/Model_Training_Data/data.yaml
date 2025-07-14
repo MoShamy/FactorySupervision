@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 7
+names: ['Box', 'Fruit', 'bag', 'bottle', 'jar', 'mask', 'pallet']
+
+roboflow:
+  workspace: rana-djciu
+  project: detection_factory_line
+  version: 5
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/rana-djciu/detection_factory_line/dataset/5
