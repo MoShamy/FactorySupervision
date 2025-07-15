@@ -1,31 +1,32 @@
 import cv2
 import time
 from ultralytics import YOLO
-from deep_sort_realtime.deepsort_tracker import DeepSort
 import json
 import numpy as np
 from dataclasses import dataclass
 
 @dataclass
 class object:
-    center: float
+    centerx: float
+    centery: float
     detect: bool
 
 
 # Load the video
-video_path = "coffee.mp4"
+video_path = "box1.mp4"
 cap = cv2.VideoCapture(video_path)
-model = YOLO("detect.pt")
+model = YOLO("best80.pt") 
 
 
 # output video writer
 width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 fps = int(cap.get(cv2.CAP_PROP_FPS))
-out = cv2.VideoWriter('outcoffee.mp4', cv2.VideoWriter_fourcc(*'mp4v'), fps, (width, height))
+out = cv2.VideoWriter('outbox1.mp4', cv2.VideoWriter_fourcc(*'mp4v'), fps, (width, height))
 
 # vertiical line position (middle of frame but can tweak it a lot)
-line_x = int(width * 0.5)
+line_x = int(width * 0.35)
+line_y = int(height * 0.2)
 
 # Initialize time and threshold for product movement would change depending on machine normal
 last_cross_time = time.time()
@@ -54,7 +55,7 @@ while cap.isOpened():
 
     # class for the object detected
     # Box: 0, Fruit: 1, bag: 2, bottle: 3, jar: 4, mask: 5, pallet: 6
-    TARGET_CLASSES = [2]
+    TARGET_CLASSES = [1] 
 
     results = model.track(source=frame, conf=0.1, iou=0.5, show=False, persist = True,tracker = "botsort.yaml")
 
@@ -64,7 +65,7 @@ while cap.isOpened():
     classes = results[0].boxes.cls.cpu().numpy()
     
     for box, Id, clas in zip(boxes, IDs,classes):
-        if clas == TARGET_CLASSES:
+        if clas == 2 or clas == 0 or clas == 6:
 
             # gets the id and dimensions for the first object detected
             obj_id = Id
@@ -74,10 +75,10 @@ while cap.isOpened():
             cx = int((x1 + x2) / 2)
             cy = int((y1 + y2) / 2)
 
-            # creates a new object
-            obj = object(cx,False)
+            # creates a new object 
+            obj = object(cx,cy,False)
             # getting the previous postion of that object
-            prev_x = previous_positions.get(obj_id,obj)
+            prev = previous_positions.get(obj_id,obj)
 
             # drawing the bounding boxes and the ID Labels
             cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (255, 255, 0), 2)
@@ -86,28 +87,30 @@ while cap.isOpened():
             cv2.putText(frame,label, (int(x1), int(y1) - 10), cv2.FONT_HERSHEY_SIMPLEX,0.8,(0, 0, 255),2,cv2.LINE_AA)
 
             # only tracks movement if the object was detected before
-            if prev_x != obj:
-                if prev_x.center < line_x and cx >= line_x:
+            if prev != obj:
+                if (prev.centerx < line_x  or prev.centery < line_y) and (cx >= line_x or cy >= line_y):
                     # counts the object before getting detected
-                    if obj.detect == False:
+                    if prev.detect == False:
                         obj_count += 1
-                    obj.detect = True
+                    prev.detect = True
                     # gets the time between each object passing
-                    if (time.time() - last_cross_time > 1):  # Avoid multiple crossings in a short time
+                    if (time.time() - last_cross_time > 0.5):  # Avoid multiple crossings in a short time   
                         time_between_crossings.append(time.time() - last_cross_time)
+                        #obj_count += 1
                     last_cross_time = time.time()
             
             # checks if the object was stored if not it stores it
             if previous_positions.get(obj_id) == None:
                 previous_positions[obj_id] = obj
-            # changes only the center of the object in the dictonary
+            # changes only the center of the object in the dictonary 
             else:
                 temp_obj = previous_positions[obj_id]
-                temp_obj.center = obj.center
+                temp_obj.centerx = obj.centerx
+                temp_obj.centery = obj.centery
                 previous_positions[obj_id] = temp_obj
 
     # Draw vertical line
-    cv2.line(frame, (line_x, 0), (line_x, height), (0, 0, 255), 2)
+    cv2.line(frame, (line_x,0), (line_x, height), (0, 0, 255), 2)
 
 #     # Calculate time since last crossing
     time_since_last_cross = time.time() - last_cross_time
@@ -124,11 +127,11 @@ while cap.isOpened():
     cv2.putText(frame, f"Time since last object: {time_since_last_cross:.2f}", (30, 120),
                 cv2.FONT_HERSHEY_SIMPLEX, 1, color, 3)
     
-    if obj_count > 0:
-        avg_time = sum(time_between_crossings) / len(time_between_crossings)
+    # if obj_count > 0:
+    #     avg_time = sum(time_between_crossings) / len(time_between_crossings)
 
-    cv2.putText(frame, f"Avg Time Between Crossings: {avg_time:.2f}", (30, 180),
-        cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 3)
+    # cv2.putText(frame, f"Avg Time Between Crossings: {avg_time:.2f}", (30, 180),
+    #     cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 3)
 
 
     out.write(frame)
