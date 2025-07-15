@@ -1,7 +1,7 @@
 task: detect
 mode: train
-model: Pre-trained_Models/yolov8m.pt
-data: Our_Models/Model1/Model_Training_Data/data.yaml
+model: ../Pre-trained_Models/yolov8m.pt
+data: Model_Training_Data/data.yaml
 epochs: 15
 time: null
 patience: 100
@@ -13,7 +13,7 @@ cache: false
 device: cpu
 workers: 8
 project: null
-name: train2
+name: train6
 exist_ok: false
 pretrained: true
 optimizer: auto
@@ -102,4 +102,4 @@ auto_augment: randaugment
 erasing: 0.4
 cfg: null
 tracker: botsort.yaml
-save_dir: /Users/mostafa/Desktop/FactorySupervision/runs/detect/train2
+save_dir: /Users/mostafa/Desktop/FactorySupervision/runs/detect/train6
