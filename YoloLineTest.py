@@ -53,6 +53,7 @@ while cap.isOpened():
         break
 
     # class for the object detected
+    # Box: 0, Fruit: 1, bag: 2, bottle: 3, jar: 4, mask: 5, pallet: 6
     TARGET_CLASSES = [2]
 
     results = model.track(source=frame, conf=0.1, iou=0.5, show=False, persist = True,tracker = "botsort.yaml")
