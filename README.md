@@ -1,5 +1,5 @@
 ## To run the tracking using the ocsort
-### Mac
+### Mac/linux
 #### mkdir -p ~/.config/ultralytics/trackers
 #### nano ~/.config/ultralytics/trackers/botsort.yaml  , use this then write the following in it
 ##### tracker_type: ocsort
