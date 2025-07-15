@@ -3,8 +3,6 @@ tf-venv
 __pycache__
 *.pyc
 .DS_Store
-.gitattributes
-*.pt
 *.mp4
 *.mov
-.DS_Store
+
