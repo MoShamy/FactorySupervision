@@ -1,4 +1,4 @@
-## To run the tracking using the ocsort
+## To run the tracking using ocsort
 ### Mac/linux
 #### mkdir -p ~/.config/ultralytics/trackers
 #### nano ~/.config/ultralytics/trackers/botsort.yaml  , use this then write the following in it
