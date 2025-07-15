@@ -13,10 +13,8 @@ class object:
 
 
 # Load the video
-video_path = "/Users/mostafa/Desktop/FactorySupervision/Dataset/Video/test_vid_4.mp4"
 video_path = "box1.mp4"
 cap = cv2.VideoCapture(video_path)
-model = YOLO("runs/detect/train6/weights/best.pt") 
 model = YOLO("best80.pt") 
 
 
