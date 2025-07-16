@@ -13,9 +13,9 @@ class object:
 
 
 # Load the video
-video_path = "box1.mp4"
+video_path = "/Users/mostafa/Desktop/FactorySupervision/Dataset/Video/test_vid_2.mp4"
 cap = cv2.VideoCapture(video_path)
-model = YOLO("best80.pt") 
+model = YOLO("Our_Models/Model2/model2.pt") 
 
 
 # output video writer
@@ -46,18 +46,25 @@ obj_count = 0
 frame_count = 0
 # dictionary that stores the movements of all the objects detected
 previous_positions = {}
+total = 20
+bar_chart = "["
+bar_chart += "░" * total  + "]"  # Initialize with 10 zeros
 
+print("Starting video processing...")
 while cap.isOpened():
+    progress = (frame_count / int(cap.get(cv2.CAP_PROP_FRAME_COUNT))) * total
+    bar_chart = "[" + "█" * int(progress) + "░" * (total - int(progress)) + "]"
+    print(f"Progress: {bar_chart} {frame_count + 1}/{int(cap.get(cv2.CAP_PROP_FRAME_COUNT))} frames processed", end="\r")
     ret, frame = cap.read()
     frame_count += 1
     if not ret:
-        break
+        break 
 
     # class for the object detected
     # Box: 0, Fruit: 1, bag: 2, bottle: 3, jar: 4, mask: 5, pallet: 6
-    TARGET_CLASSES = [1] 
+    TARGET_CLASSES = [0, 1, 2, 3, 4, 5, 6]  # Adjust this list based on your target classes
 
-    results = model.track(source=frame, conf=0.1, iou=0.5, show=False, persist = True,tracker = "botsort.yaml")
+    results = model.track(source=frame, conf=0.1, iou=0.5, show=False, persist = True,tracker = "botsort.yaml",verbose= False)
 
     # gets the dimensions , id , and class for all objects detected in a frame
     boxes = results[0].boxes.xyxy.cpu().numpy()
@@ -65,7 +72,7 @@ while cap.isOpened():
     classes = results[0].boxes.cls.cpu().numpy()
     
     for box, Id, clas in zip(boxes, IDs,classes):
-        if clas == 2 or clas == 0 or clas == 6:
+        if clas in TARGET_CLASSES:  # Check if the class is in the target classes
 
             # gets the id and dimensions for the first object detected
             obj_id = Id
@@ -87,17 +94,27 @@ while cap.isOpened():
             cv2.putText(frame,label, (int(x1), int(y1) - 10), cv2.FONT_HERSHEY_SIMPLEX,0.8,(0, 0, 255),2,cv2.LINE_AA)
 
             # only tracks movement if the object was detected before
-            if prev != obj:
-                if (prev.centerx < line_x  or prev.centery < line_y) and (cx >= line_x or cy >= line_y):
-                    # counts the object before getting detected
-                    if prev.detect == False:
-                        obj_count += 1
+            # Only track if the object has moved
+            if prev.centerx != obj.centerx or prev.centery != obj.centery:
+                # Check if the object crosses the line for the first time
+                crossed_line = (
+                    (prev.centerx < line_x and cx >= line_x) or
+                    (prev.centery < line_y and cy >= line_y)
+                )
+
+                if crossed_line and not prev.detect:
+                    # Count the object
+                    obj_count += 1
                     prev.detect = True
-                    # gets the time between each object passing
-                    if (time.time() - last_cross_time > 0.5):  # Avoid multiple crossings in a short time   
-                        time_between_crossings.append(time.time() - last_cross_time)
-                        #obj_count += 1
-                    last_cross_time = time.time()
+
+                    # Record time since last valid crossing
+                    current_time = time.time()
+                    time_between = current_time - last_cross_time
+
+                    if time_between > 0.5:  # Avoid micro bounces
+                        time_between_crossings.append(time_between)
+                        last_cross_time = current_time
+
             
             # checks if the object was stored if not it stores it
             if previous_positions.get(obj_id) == None:
@@ -112,12 +129,12 @@ while cap.isOpened():
     # Draw vertical line
     cv2.line(frame, (line_x,0), (line_x, height), (0, 0, 255), 2)
 
-#     # Calculate time since last crossing
+     # Calculate time since last crossing
     time_since_last_cross = time.time() - last_cross_time
     production_status = "Running" if time_since_last_cross < cross_threshold else "Waiting" if time_since_last_cross >= cross_threshold and time_since_last_cross < cross_threshold*3  else "Stopped"
     color = (0, 255, 0) if production_status == "Running" else (0, 255, 255) if production_status == "Waiting" else (0, 0, 255)
 
-#     # Display status
+     # Display status
     cv2.putText(frame, f"Production: {production_status}", (30, 60),
                 cv2.FONT_HERSHEY_SIMPLEX, 1, color, 3)
     
