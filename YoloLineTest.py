@@ -13,7 +13,7 @@ class object:
 
 
 # Load the video
-video_path = "/Users/mostafa/Desktop/FactorySupervision/Dataset/Video/test_vid_2.mp4"
+video_path = "/Users/mostafa/Desktop/FactorySupervision/Dataset/Video/boxes_conveyor.mov"
 cap = cv2.VideoCapture(video_path)
 model = YOLO("Our_Models/Model2/model2.pt") 
 
@@ -67,6 +67,8 @@ while cap.isOpened():
     results = model.track(source=frame, conf=0.1, iou=0.5, show=False, persist = True,tracker = "botsort.yaml",verbose= False)
 
     # gets the dimensions , id , and class for all objects detected in a frame
+    if(len(results) == 0 or results[0].boxes is None or len(results[0].boxes) == 0):
+        continue       
     boxes = results[0].boxes.xyxy.cpu().numpy()
     IDs = results[0].boxes.id.cpu().numpy()
     classes = results[0].boxes.cls.cpu().numpy()
