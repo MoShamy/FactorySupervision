@@ -22,11 +22,12 @@ class object:
  # time_th: Minimum time that has to pass before checking the state of operation
  # bounds: the margin of error allowed for the number of products produced
 
-global functioning 
+
 functioning = True
 
 def OperationStatus(video_path,out_path,line,factor,cross_threshold,targets,obj_per_time,time_th,bounds):
 
+    global functioning 
     cap = cv2.VideoCapture(video_path)
     model = YOLO("bestdet.pt") 
 
