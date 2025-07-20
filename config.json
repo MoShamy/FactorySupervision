@@ -1,0 +1,34 @@
+{
+  "paths": {
+    "models": {
+      "pretrained": "Our_Models/Pre-trained_Models",
+      "model1_local": "Our_Models/Model1_local/Model1_local.pt",
+      "model1_collab": "Our_Models/Model1_collab/model1.1.pt",
+      "model2": "Our_Models/Model2/model2.pt"
+    },
+    "data": {
+      "video_input": "Dataset/Video",
+      "image_input": "Dataset/Image",
+      "training_data": "Our_Models/Model1_local/Model_Training_Data"
+    },
+    "output": {
+      "results": "Results",
+      "processed_videos": "Processed",
+      "logs": "logs"
+    },
+    "training": {
+      "runs": "runs",
+      "weights": "runs/detect/train/weights"
+    }
+  },
+  "settings": {
+    "default_confidence": 0.5,
+    "default_model": "model2",
+    "video_output_format": "mp4",
+    "log_level": "INFO"
+  },
+  "files": {
+    "production_log": "logs/production_analysis.log",
+    "training_config": "Our_Models/Model1_local/Model_Training_Data/data.yaml"
+  }
+}

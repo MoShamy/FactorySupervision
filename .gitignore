@@ -1,8 +1,89 @@
-tf-venv
-.python-version
-__pycache__
-*.pyc
-.DS_Store
+# Virtual environments
+tf-venv/
+venv/
+env/
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Large media files
 *.mp4
 *.mov
+*.avi
+*.mkv
+*.wmv
+*.flv
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Model files (often large)
+*.pt
+*.pth
+*.onnx
+*.h5
+*.pkl
+*.model
+
+# Dataset directories
+Dataset/Video/
+Dataset/Annotaed_Dataset.zip
+Dataset/Video.zip
+
+# Output directories with large files
+Processed/
+runs/detect/*/weights/
+Results/large_outputs/
+
+# System files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Environment variables
+.env
+!.env.example
+
+# Temporary files
+*.tmp
+*.temp
 

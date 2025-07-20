@@ -3,3 +3,5 @@
 Dataset/video/*.mp4 filter=lfs diff=lfs merge=lfs -text
 Dataset/video/*.mov filter=lfs diff=lfs merge=lfs -text
 Results/Model1/*.mp4 filter=lfs diff=lfs merge=lfs -text
+*.zip filter=lfs diff=lfs merge=lfs -text
+*.mov filter=lfs diff=lfs merge=lfs -text
