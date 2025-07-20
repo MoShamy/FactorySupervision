@@ -1,0 +1,25 @@
+Production Analysis - 2025-07-20 16:36:03.318859
+==================================================
+
+
+PRODUCTION ANALYSIS (Offline Mode)
+====================================
+
+SUMMARY:
+• Total Events: 28
+• Running: 0 (0.0%)
+• Too Fast: 0 (0.0%)
+• Too Slow: 18 (64.3%)
+• Stopped: 10 (35.7%)
+
+ASSESSMENT:
+🚨 CRITICAL: High stop rate detected
+→ Immediate maintenance review required
+
+RECOMMENDATIONS:
+• Monitor equipment during problem periods
+• Review maintenance schedules
+• Check for recurring time patterns
+• Implement preventive measures
+
+PRIORITY: High
