@@ -29,8 +29,6 @@ def OperationStatus(video_path,out_path,line,factor,cross_threshold,targets,obj_
     # output video writer
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    # fps = int(cap.get(cv2.CAP_PROP_FPS))
-    # out = cv2.VideoWriter(out_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (width, height))
 
     # vertiical line position (middle of frame but can tweak it a lot)
     line_x = int(width * factor)
@@ -105,57 +103,25 @@ def OperationStatus(video_path,out_path,line,factor,cross_threshold,targets,obj_
                         temp_obj.centerx = obj.centerx
                         temp_obj.centery = obj.centery
                         previous_positions[obj_id] = temp_obj
-
-        # Draw vertical line
-        # if line:
-        #      cv2.line(frame, (0,line_y), (width, line_y), (0, 0, 255), 2)
-        # else:
-        #     cv2.line(frame, (line_x,0), (line_x, height), (0, 0, 255), 2)
-
-    #     # Calculate time since last crossing
-        # time_since_last_cross = time.time() - last_cross_time
-        # production_status = "Running" if time_since_last_cross < cross_threshold else "Waiting" if time_since_last_cross >= cross_threshold and time_since_last_cross < cross_threshold*3  else "Stopped"
-        # color = (0, 255, 0) if production_status == "Running" else (0, 255, 255) if production_status == "Waiting" else (0, 0, 255)
-
-        #checks which the production is currently in
-        if start_time - time.time() >= time_th:
+        
+        if  time.time() - start_time >= time_th:
             readable_time = time.ctime(time.time())
             if obj_count >= obj_per_time - bounds and obj_count <= obj_per_time + bounds:
                 with open(out_path, "a") as f:
-                    f.write(f"Running on {readable_time}")
+                    f.write(f"Running on {readable_time}\n")
             elif obj_count > obj_per_time + bounds:
                 with open(out_path, "a") as f:
-                    f.write(f"Too Fast on {readable_time}")
+                    f.write(f"Too Fast on {readable_time}\n")
             elif obj_count < obj_per_time - bounds and obj_count > 0:
                 with open(out_path, "a") as f:
-                    f.write(f"Too Slow on {readable_time}")
+                    f.write(f"Too Slow on {readable_time}\n")
             else:
                 with open(out_path, "a") as f:
-                    f.write(f"Stopped on {readable_time}")
+                    f.write(f"Stopped on {readable_time}\n")
 
             obj_count = 0
             start_time = time.time()
 
-    # #     # Display status
-    #     cv2.putText(frame, f"Production: {production_status}", (30, 60),
-    #                 cv2.FONT_HERSHEY_SIMPLEX, 1, color, 3)
-        
-    #     cv2.putText(frame, f"Number of objects: {obj_count}", (30, 200),
-    #                 cv2.FONT_HERSHEY_SIMPLEX, 1, color, 3)
-
-    #     cv2.putText(frame, f"Time since last object: {time_since_last_cross:.2f}", (30, 120),
-    #                 cv2.FONT_HERSHEY_SIMPLEX, 1, color, 3)
-        
-        # if obj_count > 0:
-        #     avg_time = sum(time_between_crossings) / len(time_between_crossings)
-
-        # cv2.putText(frame, f"Avg Time Between Crossings: {avg_time:.2f}", (30, 180),
-        #     cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 3)
-
-
-        # out.write(frame)
     print(np.array(time_between_crossings).std())
 
-
     cap.release()
-    #out.release()
