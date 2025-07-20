@@ -22,18 +22,28 @@ class object:
  # time_th: Minimum time that has to pass before checking the state of operation
  # bounds: the margin of error allowed for the number of products produced
 
-
+global functioning 
 functioning = True
 
 def OperationStatus(video_path,out_path,line,factor,cross_threshold,targets,obj_per_time,time_th,bounds):
 
-    global functioning 
     cap = cv2.VideoCapture(video_path)
-    model = YOLO("bestdet.pt") 
+    model = YOLO("/Users/mostafa/Desktop/FactorySupervision/Our_Models/Model2/model2.pt") 
 
     # output video writer
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    fps = int(cap.get(cv2.CAP_PROP_FPS))
+    
+    # Create output video filename based on input
+    import os
+    input_name = os.path.splitext(os.path.basename(video_path))[0]
+    output_video_path = f"Results/Processed_Videos/{input_name}_processed.mp4"
+    os.makedirs("Results/Processed_Videos", exist_ok=True)
+    
+    # Initialize video writer
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    out_video = cv2.VideoWriter(output_video_path, fourcc, fps, (width, height))
 
     # vertiical line position (middle of frame but can tweak it a lot)
     line_x = int(width * factor)
@@ -109,6 +119,35 @@ def OperationStatus(video_path,out_path,line,factor,cross_threshold,targets,obj_
                         temp_obj.centery = obj.centery
                         previous_positions[obj_id] = temp_obj
         
+        # Draw the detection line on the frame
+        if line:  # Horizontal line
+            cv2.line(frame, (0, line_y), (width, line_y), (0, 0, 255), 3)
+        else:  # Vertical line
+            cv2.line(frame, (line_x, 0), (line_x, height), (0, 0, 255), 3)
+        
+        # Add production status text on frame
+        current_time = time.time()
+        time_since_last = current_time - last_cross_time
+        if time_since_last < cross_threshold:
+            status_text = "Running"
+            status_color = (0, 255, 0)  # Green
+        elif time_since_last < cross_threshold * 3:
+            status_text = "Waiting"
+            status_color = (0, 255, 255)  # Yellow
+        else:
+            status_text = "Stopped"
+            status_color = (0, 0, 255)  # Red
+        
+        cv2.putText(frame, f"Status: {status_text}", (30, 50), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 1.5, status_color, 3)
+        cv2.putText(frame, f"Objects: {obj_count}", (30, 100), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+        cv2.putText(frame, f"Time since last: {time_since_last:.1f}s", (30, 140), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+        
+        # Write the frame to output video
+        out_video.write(frame)
+        
         if  time.time() - start_time >= time_th:
             readable_time = time.ctime(time.time())
             if obj_count >= obj_per_time - bounds and obj_count <= obj_per_time + bounds:
@@ -133,4 +172,7 @@ def OperationStatus(video_path,out_path,line,factor,cross_threshold,targets,obj_
     print(np.array(time_between_crossings).std())
 
     cap.release()
-
+    out_video.release()
+    
+    print(f"✅ Processed video saved to: {output_video_path}")
+    return output_video_path
