@@ -21,6 +21,10 @@ class object:
  # obj_per_time: the usual object per specific time produced in production
  # time_th: Minimum time that has to pass before checking the state of operation
  # bounds: the margin of error allowed for the number of products produced
+
+global functioning 
+functioning = True
+
 def OperationStatus(video_path,out_path,line,factor,cross_threshold,targets,obj_per_time,time_th,bounds):
 
     cap = cv2.VideoCapture(video_path)
@@ -107,21 +111,25 @@ def OperationStatus(video_path,out_path,line,factor,cross_threshold,targets,obj_
         if  time.time() - start_time >= time_th:
             readable_time = time.ctime(time.time())
             if obj_count >= obj_per_time - bounds and obj_count <= obj_per_time + bounds:
-                with open(out_path, "a") as f:
-                    f.write(f"Running on {readable_time}\n")
+                functioning = True
             elif obj_count > obj_per_time + bounds:
                 with open(out_path, "a") as f:
                     f.write(f"Too Fast on {readable_time}\n")
+                functioning = False
             elif obj_count < obj_per_time - bounds and obj_count > 0:
                 with open(out_path, "a") as f:
                     f.write(f"Too Slow on {readable_time}\n")
+                functioning = False
             else:
                 with open(out_path, "a") as f:
                     f.write(f"Stopped on {readable_time}\n")
+                functioning = False
 
             obj_count = 0
             start_time = time.time()
 
+
     print(np.array(time_between_crossings).std())
 
     cap.release()
+
