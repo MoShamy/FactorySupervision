@@ -13,22 +13,25 @@ import requests
 from detector import CameraMotionDetector, recorded_videos_queue, lock
 from pydantic import BaseModel
 
+from status import functioning as global_functioning, previous_functioning
+from fastapi import Request
+
+
 
 class NotificationPayload(BaseModel):
     title: str
     body: str
 
-
-
 expo_push_tokens = set()
-
-
 
 app = FastAPI()
 
 event_loop = asyncio.get_event_loop()
 
 EXPO_PUSH_URL = "https://exp.host/--/api/v2/push/send"
+
+
+VIDEO_DIR = "recordings"
 
 
 app.add_middleware(
@@ -39,12 +42,28 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# # Start the camera detector thread
-# detector = CameraMotionDetector(record_path="recordings")
-# detector.start()
 
 
-VIDEO_DIR = "recordings"
+@app.post("/internal-update-status")
+async def update_status(request: Request):
+    data = await request.json()
+    new_status = data.get("functioning")
+
+    global global_functioning, previous_functioning
+
+    # if new_status != previous_functioning:
+        # previous_functioning = new_status
+        # global_functioning = new_status
+
+    if not new_status:
+        temp_token = "ExponentPushToken[DtaKDBNEHe0CJyforTbFH9]"
+        send_push_notification(temp_token, "⛔ Stoppage Detected", "Production line has stopped!")
+    else:
+        temp_token = "ExponentPushToken[DtaKDBNEHe0CJyforTbFH9]"
+        send_push_notification(temp_token, "✅ Production Running", "Production line is functioning normally!")
+
+    return {"message": "Status updated"}
+
 
 @app.get("/videos/{filename}")
 def get_video(filename: str):
@@ -69,7 +88,6 @@ def send_push_notification(token, title, body):
         },
     )
     print(f"📨 Sent notification to {token}: {response.status_code}")
-
 
 
 @app.post("/send-notification")
@@ -112,10 +130,7 @@ def get_new_videos():
 
     return {"new_videos": [os.path.basename(v) for v in videos]}
 
-
-
-@app.on_event("shutdown")
-def shutdown_event():
-    detector.stop()
-    detector.join()
-
+    
+@app.get("/status")
+def get_status():
+    return {"status": "Running" if global_functioning else "Stopped"}
