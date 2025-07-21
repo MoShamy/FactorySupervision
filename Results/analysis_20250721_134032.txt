@@ -1,4 +1,4 @@
-Production Analysis - 2025-07-20 16:36:03.318859
+Production Analysis - 2025-07-21 13:40:32.136234
 ==================================================
 
 
@@ -6,11 +6,11 @@ PRODUCTION ANALYSIS (Offline Mode)
 ====================================
 
 SUMMARY:
-• Total Events: 28
+• Total Events: 1
 • Running: 0 (0.0%)
 • Too Fast: 0 (0.0%)
-• Too Slow: 18 (64.3%)
-• Stopped: 10 (35.7%)
+• Too Slow: 0 (0.0%)
+• Stopped: 1 (100.0%)
 
 ASSESSMENT:
 🚨 CRITICAL: High stop rate detected

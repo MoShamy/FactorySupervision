@@ -26,14 +26,25 @@ global functioning
 functioning = True
 
 def OperationStatus(video_path,out_path,line,factor,cross_threshold,targets,obj_per_time,time_th,bounds):
-
+    global functioning 
+    
     cap = cv2.VideoCapture(video_path)
     model = YOLO("/Users/mostafa/Desktop/FactorySupervision/Our_Models/Model2/model2.pt") 
+
+    # Check if video opened successfully
+    if not cap.isOpened():
+        print(f"❌ Error: Could not open video file {video_path}")
+        return None
 
     # output video writer
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = int(cap.get(cv2.CAP_PROP_FPS))
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    duration = total_frames / fps if fps > 0 else 0
+    
+    print(f"📹 Video Info: {width}x{height} @ {fps} FPS")
+    print(f"📊 Total frames: {total_frames}, Duration: {duration:.2f} seconds")
     
     # Create output video filename based on input
     import os
@@ -41,15 +52,39 @@ def OperationStatus(video_path,out_path,line,factor,cross_threshold,targets,obj_
     output_video_path = f"Results/Processed_Videos/{input_name}_processed.mp4"
     os.makedirs("Results/Processed_Videos", exist_ok=True)
     
-    # Initialize video writer
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    # Initialize video writer with better codec settings
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # Try mp4v first
     out_video = cv2.VideoWriter(output_video_path, fourcc, fps, (width, height))
+    
+    # Check if video writer opened successfully
+    if not out_video.isOpened():
+        print("⚠️ Warning: mp4v codec failed, trying XVID...")
+        fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        output_video_path = output_video_path.replace('.mp4', '.avi')
+        out_video = cv2.VideoWriter(output_video_path, fourcc, fps, (width, height))
+        
+    if not out_video.isOpened():
+        print("❌ Error: Could not initialize video writer")
+        cap.release()
+        return None
+    
+    print(f"✅ Video writer initialized successfully")
+    
+    # Initialize OpenCV window for real-time display
+    cv2.namedWindow("YOLO Line Detection", cv2.WINDOW_AUTOSIZE)
+    print("🎥 Starting real-time video stream... Press 'q' to quit, 'p' to pause")
+    print(f"💾 Output video will be saved to: {output_video_path}")
+
+    # Calculate frame delay for real-time playback
+    frame_delay = int(1000 / fps) if fps > 0 else 33  # milliseconds per frame
+    print(f"⏱️ Frame delay: {frame_delay}ms for {fps} FPS playback")
 
     # vertiical line position (middle of frame but can tweak it a lot)
     line_x = int(width * factor)
     line_y = int(height * factor)
     last_cross_time = time.time()
     start_time = time.time()
+    process_start_time = time.time()
 
     avg_time = 0.0
     time_between_crossings = []
@@ -62,9 +97,10 @@ def OperationStatus(video_path,out_path,line,factor,cross_threshold,targets,obj_
         ret, frame = cap.read()
         frame_count += 1
         if not ret:
+            print(f"📹 End of video reached or failed to read frame {frame_count}")
             break
 
-        results = model.track(source=frame, conf=0.1, iou=0.5, show=False, persist = True,tracker = "botsort.yaml")
+        results = model.track(source=frame, conf=0.1, iou=0.5, show=False, persist = True,tracker = "botsort.yaml", verbose=False)
 
         if results[0].boxes.id != None :
             # gets the dimensions , id , and class for all objects detected in a frame
@@ -138,16 +174,51 @@ def OperationStatus(video_path,out_path,line,factor,cross_threshold,targets,obj_
             status_text = "Stopped"
             status_color = (0, 0, 255)  # Red
         
+        # Add frame info and progress
+        progress_percent = (frame_count / total_frames * 100) if total_frames > 0 else 0
+        elapsed_time = current_time - process_start_time
+        
         cv2.putText(frame, f"Status: {status_text}", (30, 50), 
                     cv2.FONT_HERSHEY_SIMPLEX, 1.5, status_color, 3)
         cv2.putText(frame, f"Objects: {obj_count}", (30, 100), 
                     cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
         cv2.putText(frame, f"Time since last: {time_since_last:.1f}s", (30, 140), 
                     cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+        cv2.putText(frame, f"Frame: {frame_count}/{total_frames} ({progress_percent:.1f}%)", (30, 180), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (200, 200, 200), 2)
+        cv2.putText(frame, f"Processing time: {elapsed_time:.1f}s", (30, 210), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (200, 200, 200), 2)
         
-        # Write the frame to output video
+        # Write the frame to output video (ALWAYS save)
         out_video.write(frame)
         
+        # Display the frame in real-time
+        cv2.imshow("YOLO Line Detection", frame)
+        
+        # Dynamic frame delay based on original video FPS
+        key = cv2.waitKey(frame_delay) & 0xFF
+        if key == ord('q'):
+            print("🛑 User requested to quit...")
+            break
+        elif key == ord('p'):  # Pause functionality
+            print("⏸️ Paused. Press any key to continue...")
+            cv2.waitKey(0)
+        elif key == ord('s'):  # Skip ahead
+            print("⏭️ Skipping 10 frames...")
+            for _ in range(10):
+                ret, _ = cap.read()
+                if not ret:
+                    break
+                frame_count += 10
+            
+        # Progress update every 30 frames
+        if frame_count % 30 == 0:
+            print(f"📹 Processing frame {frame_count}/{total_frames} ({progress_percent:.1f}%) - {status_text}")
+            
+        if not functioning:
+            print("❌ Operation stopped due to malfunction.")
+            break
+
         if  time.time() - start_time >= time_th:
             readable_time = time.ctime(time.time())
             if obj_count >= obj_per_time - bounds and obj_count <= obj_per_time + bounds:
@@ -169,10 +240,169 @@ def OperationStatus(video_path,out_path,line,factor,cross_threshold,targets,obj_
             start_time = time.time()
 
 
-    print(np.array(time_between_crossings).std())
+
+
+    print(f"📊 Processing completed:")
+    print(f"   • Total frames processed: {frame_count}")
+    print(f"   • Objects detected: {len(time_between_crossings)}")
+    if len(time_between_crossings) > 0:
+        print(f"   • Average time between crossings: {np.mean(time_between_crossings):.2f}s")
+        print(f"   • Standard deviation: {np.array(time_between_crossings).std():.2f}s")
 
     cap.release()
     out_video.release()
+    cv2.destroyAllWindows()  # Close all OpenCV windows
     
-    print(f"✅ Processed video saved to: {output_video_path}")
+    print(f"✅ Real-time processing completed!")
+    print(f"💾 Annotated video saved to: {output_video_path}")
+    
+    # Verify output video was created successfully
+    if os.path.exists(output_video_path):
+        file_size = os.path.getsize(output_video_path) / (1024 * 1024)  # MB
+        print(f"📁 Output file size: {file_size:.2f} MB")
+    else:
+        print("⚠️ Warning: Output video file was not created successfully")
+    
     return output_video_path
+
+
+def test_video_stream(video_path):
+    """
+    Simple test function to verify real-time video streaming works.
+    Just displays the video without any processing.
+    """
+    print(f"🧪 Testing video stream for: {video_path}")
+    
+    cap = cv2.VideoCapture(video_path)
+    if not cap.isOpened():
+        print(f"❌ Error: Could not open video file {video_path}")
+        return False
+    
+    # Get video properties
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    fps = int(cap.get(cv2.CAP_PROP_FPS))
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    
+    print(f"📹 Video: {width}x{height} @ {fps} FPS, {total_frames} frames")
+    
+    cv2.namedWindow("Video Stream Test", cv2.WINDOW_AUTOSIZE)
+    print("🎥 Press 'q' to quit video test...")
+    
+    # Calculate proper frame delay
+    frame_delay = int(1000 / fps) if fps > 0 else 33
+    
+    frame_count = 0
+    start_time = time.time()
+    
+    while cap.isOpened():
+        ret, frame = cap.read()
+        frame_count += 1
+        
+        if not ret:
+            print(f"📹 End of video reached at frame {frame_count}")
+            break
+        
+        # Add frame counter and timing info
+        elapsed = time.time() - start_time
+        progress = (frame_count / total_frames * 100) if total_frames > 0 else 0
+        
+        cv2.putText(frame, f"Frame: {frame_count}/{total_frames}", (10, 30), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        cv2.putText(frame, f"Progress: {progress:.1f}%", (10, 70), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        cv2.putText(frame, f"Time: {elapsed:.1f}s", (10, 110), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        
+        cv2.imshow("Video Stream Test", frame)
+        
+        # Use proper frame timing
+        if cv2.waitKey(frame_delay) & 0xFF == ord('q'):
+            print("🛑 User requested to quit test...")
+            break
+    
+    cap.release()
+    cv2.destroyAllWindows()
+    print("✅ Video stream test completed")
+    return True
+
+
+def test_video_with_output(video_path):
+    """
+    Test function that creates both real-time display and saves output video.
+    """
+    print(f"🧪 Testing video with output for: {video_path}")
+    
+    cap = cv2.VideoCapture(video_path)
+    if not cap.isOpened():
+        print(f"❌ Error: Could not open video file {video_path}")
+        return False
+    
+    # Get video properties
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    fps = int(cap.get(cv2.CAP_PROP_FPS))
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    
+    print(f"📹 Video: {width}x{height} @ {fps} FPS, {total_frames} frames")
+    
+    # Setup output video
+    import os
+    input_name = os.path.splitext(os.path.basename(video_path))[0]
+    output_video_path = f"Results/Processed_Videos/{input_name}_test_output.mp4"
+    os.makedirs("Results/Processed_Videos", exist_ok=True)
+    
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    out_video = cv2.VideoWriter(output_video_path, fourcc, fps, (width, height))
+    
+    if not out_video.isOpened():
+        print("⚠️ Warning: mp4v failed, trying XVID...")
+        fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        output_video_path = output_video_path.replace('.mp4', '.avi')
+        out_video = cv2.VideoWriter(output_video_path, fourcc, fps, (width, height))
+    
+    cv2.namedWindow("Video Test with Output", cv2.WINDOW_AUTOSIZE)
+    print(f"🎥 Press 'q' to quit. Output will be saved to: {output_video_path}")
+    
+    frame_delay = int(1000 / fps) if fps > 0 else 33
+    frame_count = 0
+    start_time = time.time()
+    
+    while cap.isOpened():
+        ret, frame = cap.read()
+        frame_count += 1
+        
+        if not ret:
+            print(f"📹 End of video reached at frame {frame_count}")
+            break
+        
+        # Add annotations
+        elapsed = time.time() - start_time
+        progress = (frame_count / total_frames * 100) if total_frames > 0 else 0
+        
+        cv2.putText(frame, f"TEST OUTPUT - Frame: {frame_count}", (10, 30), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
+        cv2.putText(frame, f"Progress: {progress:.1f}%", (10, 70), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 2)
+        
+        # Save to output video
+        out_video.write(frame)
+        
+        # Display real-time
+        cv2.imshow("Video Test with Output", frame)
+        
+        if cv2.waitKey(frame_delay) & 0xFF == ord('q'):
+            print("🛑 User requested to quit test...")
+            break
+    
+    cap.release()
+    out_video.release()
+    cv2.destroyAllWindows()
+    
+    if os.path.exists(output_video_path):
+        file_size = os.path.getsize(output_video_path) / (1024 * 1024)
+        print(f"✅ Test completed! Output saved: {output_video_path} ({file_size:.2f} MB)")
+        return True
+    else:
+        print("❌ Test failed: Output video not created")
+        return False
