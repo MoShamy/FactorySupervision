@@ -13,14 +13,28 @@ class object:
     centery: float
     detect: bool
 
+
 def OperationStatus(video_path, out_path, line, factor, cross_threshold, targets, obj_per_time, time_th, bounds):
     # global functioning 
     cap = cv2.VideoCapture(video_path)
     model = YOLO("Our_Models/Best_Models/bestdet.pt") 
 
+ # Box: 0, Fruit: 1, bag: 2, bottle: 3, jar: 4, mask: 5, pallet: 6
+ # video_path: for the input video stream 
+ # out_path: for the log
+ # line: boolean used to see if we are using a vertical or horizotal line
+ # factor: what will be multiplied with either the eidth of height for the line
+ # cross_threshold: the time before the process is considered to have stopped
+ # targets: a list containing the target classes
+ # obj_per_time: the usual object per specific time produced in production
+ # time_th: Minimum time that has to pass before checking the state of operation
+ # bounds: the margin of error allowed for the number of products produced
+
+
     # output video writer setup
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
     fps = cap.get(cv2.CAP_PROP_FPS)
     
     # Initialize VideoWriter to save the processed video
@@ -97,6 +111,7 @@ def OperationStatus(video_path, out_path, line, factor, cross_threshold, targets
                         temp_obj.centery = obj.centery
                         previous_positions[obj_id] = temp_obj
         
+
         # Display object count on frame
         cv2.putText(frame, f"Count: {obj_count}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         
@@ -109,6 +124,7 @@ def OperationStatus(video_path, out_path, line, factor, cross_threshold, targets
         cv2.imshow("Live Preview", display_frame)
 
         if time.time() - start_time >= time_th:
+
             readable_time = time.ctime(time.time())
             print(obj_count)
             if obj_count >= obj_per_time - bounds and obj_count <= obj_per_time + bounds:
@@ -126,6 +142,7 @@ def OperationStatus(video_path, out_path, line, factor, cross_threshold, targets
                     f.write(f"Stopped on {readable_time}\n")
                 functioning = False
 
+
             print("🔄 status :", functioning, "while global is ", status.functioning)
             if functioning != status.functioning:
                 try:
@@ -133,7 +150,7 @@ def OperationStatus(video_path, out_path, line, factor, cross_threshold, targets
                     requests.post("http://localhost:8000/internal-update-status", json={"functioning": functioning})
                 except Exception as e:
                     print("❌ Failed to notify backend:", e)
-            print(functioning)
+
             obj_count = 0
             start_time = time.time()
 
@@ -145,5 +162,7 @@ def OperationStatus(video_path, out_path, line, factor, cross_threshold, targets
 
     # Release resources
     cap.release()
+
     out_video.release()
     cv2.destroyAllWindows()
+
