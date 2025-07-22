@@ -21,7 +21,7 @@ def main():
     
     
     # Test video path
-    test_video = "test.mp4"
+    test_video = "All Edits Coffee .mp4"
     
     if os.path.exists(test_video):
         print(f"📹 Analyzing video: {test_video}")
@@ -30,11 +30,11 @@ def main():
         os.makedirs("logs", exist_ok=True)
         
         line = False  # True for horizontal line, False for vertical line
-        factor = 0.35  # Line position factor (35% of width/height)
+        factor = 0.5  # Line position factor (35% of width/height)
         cross_threshold = 4  # Time threshold for stopped detection
         targets = [2]  # Target classes: Box, Fruit, bag, bottle, jar, mask, pallet
         obj_per_time = 3  # Expected objects per time period
-        time_th = 30  # Time threshold for production check (seconds)
+        time_th = 40  # Time threshold for production check (seconds)
         bounds = 1  # Margin of error for object count
         
         # Run analysis
