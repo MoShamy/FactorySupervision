@@ -5,3 +5,7 @@ __pycache__
 .DS_Store
 *.mp4
 *.mov
+node_modules
+.env
+*.png
+frontend_ref

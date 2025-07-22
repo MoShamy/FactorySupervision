@@ -21,7 +21,7 @@ def main():
     
     
     # Test video path
-    test_video = "All Edits Coffee .mp4"
+    test_video = "Dataset/Video/test_vid_2.mp4"
     
     if os.path.exists(test_video):
         print(f"📹 Analyzing video: {test_video}")
