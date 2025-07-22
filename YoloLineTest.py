@@ -16,11 +16,7 @@ class object:
 def OperationStatus(video_path, out_path, line, factor, cross_threshold, targets, obj_per_time, time_th, bounds):
     # global functioning 
     cap = cv2.VideoCapture(video_path)
-<<<<<<< HEAD
-    model = YOLO("bestdet.pt") 
-=======
     model = YOLO("Our_Models/Best_Models/bestdet.pt") 
->>>>>>> caa50f5 (minor changes)
 
     # output video writer setup
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
