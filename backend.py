@@ -8,12 +8,12 @@ import asyncio
 from fastapi import Request
 from fastapi.responses import FileResponse
 from fastapi import HTTPException
-from notifications import send_push_notification, expo_push_tokens
+# from notifications import send_push_notification, expo_push_tokens
 import requests
 from detector import CameraMotionDetector, recorded_videos_queue, lock
 from pydantic import BaseModel
 
-from status import functioning as global_functioning, previous_functioning
+import status
 from fastapi import Request
 
 
@@ -51,11 +51,13 @@ async def update_status(request: Request):
     new_status = data.get("functioning")
     print("🔄 Updating status from internal request")
 
-    global global_functioning, previous_functioning
+    # global global_functioning, previous_functioning
 
     # if new_status != previous_functioning:
         # previous_functioning = new_status
-        # global_functioning = new_status
+    # status.functioning = new_status
+    # print(f"global functioning = {status.functioning}")
+
     temp_token = "ExponentPushToken[DtaKDBNEHe0CJyforTbFH9]"
     if new_status:
         send_push_notification(temp_token, "✅ Production Running", "Production line is functioning normally!")
@@ -135,4 +137,4 @@ def get_new_videos():
     
 @app.get("/status")
 def get_status():
-    return {"status": "Running" if global_functioning else "Stopped"}
+    return {"status": "Running" if status.functioning else "Stopped"}
