@@ -38,6 +38,7 @@ def OperationStatus(video_path, out_path, line, factor, cross_threshold, targets
     obj_count = 0
     frame_count = 0
     previous_positions = {}
+    anamoly = {}
 
     while cap.isOpened():
         ret, frame = cap.read()
@@ -59,16 +60,17 @@ def OperationStatus(video_path, out_path, line, factor, cross_threshold, targets
             classes = results[0].boxes.cls.cpu().numpy()
             
             for box, Id, clas in zip(boxes, IDs, classes):
-                if clas in targets:
-                    obj_id = Id
-                    x1, y1, x2, y2 = box
+                obj_id = Id
+                x1, y1, x2, y2 = box
             
-                    cx = int((x1 + x2) / 2)
-                    cy = int((y1 + y2) / 2)
+                cx = int((x1 + x2) / 2)
+                cy = int((y1 + y2) / 2)
 
-                    obj = object(cx, cy, False)
+                obj = object(cx, cy, False)
+                
+
+                if clas in targets:
                     prev = previous_positions.get(obj_id, obj)
-
                     # drawing the bounding boxes and the ID Labels
                     cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (255, 255, 0), 2)
                     cv2.circle(frame, (cx, cy), 5, (0, 255, 0), -1)
@@ -96,8 +98,11 @@ def OperationStatus(video_path, out_path, line, factor, cross_threshold, targets
                         temp_obj.centery = obj.centery
                         previous_positions[obj_id] = temp_obj
                 else:
-                    with open(out_path, "a") as f:
-                        f.write(f"a {model.names[int(clas)]} was detected on the line at {time.ctime(time.time())}\n")
+                    if anamoly.get(obj_id) == None:
+                        with open(out_path, "a") as f:
+                            f.write(f"a {model.names[int(clas)]} was detected on the line at {time.ctime(time.time())}\n")
+                        obj.detect = True
+                        anamoly[obj_id] = obj
         
         # Display object count on frame
         cv2.putText(frame, f"Count: {obj_count}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
