@@ -95,6 +95,9 @@ def OperationStatus(video_path, out_path, line, factor, cross_threshold, targets
                         temp_obj.centerx = obj.centerx
                         temp_obj.centery = obj.centery
                         previous_positions[obj_id] = temp_obj
+                else:
+                    with open(out_path, "a") as f:
+                        f.write(f"a {model.names[int(clas)]} was detected on the line at {time.ctime(time.time())}\n")
         
         # Display object count on frame
         cv2.putText(frame, f"Count: {obj_count}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
