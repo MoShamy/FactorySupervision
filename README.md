@@ -1,3 +1,4 @@
+
 # 🏭 FactorySupervision - AI-Powered Production Line Monitoring
 
 FactorySupervision is an AI-powered system for monitoring production lines using computer vision. It detects objects, tracks their movement across virtual lines, and provides real-time analysis of production status with AI-powered insights.
@@ -52,6 +53,27 @@ FactorySupervision is an AI-powered system for monitoring production lines using
    - **AI Analysis**: openai (for ChatGPT integration)
    - **Development**: jupyter, ipykernel, matplotlib
    - **Optional**: GPU support packages (see comments in requirements.txt)
+
+Note:
+
+## To run the tracking using ocsort
+### Mac/linux
+#### mkdir -p .config/ultralytics/trackers
+#### 
+
+# make new file in the newly created foler .config/ultralytics/trackers
+## Copy into it the following:
+
+##### tracker_type: ocsort
+##### appearance: True
+##### match_thresh: 0.3
+##### track_buffer: 100
+##### proximity_thresh: 0.1
+##### min_box_area: 10
+##### vertical_ratio: 1.6
+##### iou_thresh: 0
+
+## And save
 
 4. **Set up object tracking (Required for advanced tracking)**
    ```bash
