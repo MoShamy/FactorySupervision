@@ -38,7 +38,7 @@ def OperationStatus(video_path, out_path, line, factor, cross_threshold, targets
     obj_count = 0
     frame_count = 0
     previous_positions = {}
-    anamoly = {}
+    anamoly = {} # objects that are not in the target classes but are detected on the line
 
     while cap.isOpened():
         ret, frame = cap.read()
@@ -103,6 +103,13 @@ def OperationStatus(video_path, out_path, line, factor, cross_threshold, targets
                             f.write(f"a {model.names[int(clas)]} was detected on the line at {time.ctime(time.time())}\n")
                         obj.detect = True
                         anamoly[obj_id] = obj
+                    # we should also consider the case where the object is not in the target classes but has already been detected
+                    #  so we can log it as an anamoly
+                    #  else: 
+                    #     with open(out_path, "a") as f:
+                    #         f.write(f"a {model.names[int(clas)]} was detected on the line at {time.ctime(time.time())}\n")
+                    #     obj.detect = True
+                    #     anamoly[obj_id] = obj
         
         # Display object count on frame
         cv2.putText(frame, f"Count: {obj_count}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
