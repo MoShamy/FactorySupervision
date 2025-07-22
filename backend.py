@@ -46,25 +46,43 @@ app.add_middleware(
 
 @app.post("/internal-update-status")
 async def update_status(request: Request):
+<<<<<<< HEAD
 
+=======
+    """
+    Update the functioning status of the production line.
+    """
+>>>>>>> caa50f5 (minor changes)
     data = await request.json()
     new_status = data.get("functioning")
     print("🔄 Updating status from internal request")
 
-    global global_functioning, previous_functioning
+    global global_functioning
 
+<<<<<<< HEAD
     # if new_status != previous_functioning:
         # previous_functioning = new_status
         # global_functioning = new_status
     temp_token = "ExponentPushToken[DtaKDBNEHe0CJyforTbFH9]"
     if new_status:
+=======
+    # if new_status != previous_functioning: # Why arent we using this?
+    #     previous_functioning = new_status
+    #     global_functioning = new_status
+
+    if not new_status:
+        temp_token = "ExponentPushToken[DtaKDBNEHe0CJyforTbFH9]"
+        send_push_notification(temp_token, "⛔ Stoppage Detected", "Production line has stopped!")
+    else:
+        temp_token = "ExponentPushToken[DtaKDBNEHe0CJyforTbFH9]"
+>>>>>>> caa50f5 (minor changes)
         send_push_notification(temp_token, "✅ Production Running", "Production line is functioning normally!")
     else:
         send_push_notification(temp_token, "⛔ Stoppage Detected", "Production line has stopped!")
         temp_token = "ExponentPushToken[DtaKDBNEHe0CJyforTbFH9]"
        
 
-    return {"message": "Status updated"}
+    return {"message": "Status updated"} #  #should we update the global_functioning here?
 
 
 @app.get("/videos/{filename}")
