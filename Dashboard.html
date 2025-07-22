@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CCTV Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background-color: #0e1621;
+      color: #fff;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 240px;
+      background-color: #1a2634;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      border-right: 2px solid #00ffe5;
+    }
+
+    .sidebar h2 {
+      color: #00ffe5;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .sidebar ul {
+      list-style: none;
+    }
+
+    .sidebar ul li {
+      margin: 15px 0;
+      padding: 10px;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+
+    .sidebar ul li:hover {
+      background-color: #00ffe530;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      overflow: auto;
+    }
+
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .video-feed {
+      background-color: #1f2a3b;
+      border-radius: 10px;
+      overflow: hidden;
+      padding: 10px;
+    }
+
+    .video-feed video, .video-feed img {
+      width: 100%;
+      border-radius: 8px;
+    }
+
+    .charts, .alerts {
+      margin-top: 20px;
+    }
+
+    .chat-panel {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      width: 300px;
+      height: 400px;
+      background: rgba(0,0,0,0.8);
+      border-left: 2px solid #00ffe5;
+      border-top: 2px solid #00ffe5;
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      z-index: 1000;
+    }
+
+    .chat-header {
+      padding: 12px;
+      background-color: #1f2a3b;
+      border-bottom: 1px solid #00ffe530;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+      font-size: 14px;
+    }
+
+    .chat-input {
+      padding: 10px;
+      border-top: 1px solid #00ffe530;
+      display: flex;
+    }
+
+    .chat-input textarea {
+      flex: 1;
+      padding: 8px;
+      resize: none;
+      border: none;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 14px;
+      background-color: #1f2a3b;
+      color: white;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <h2>CCTV</h2>
+    <ul>
+      <li>📺 Dashboard</li>
+      <li>📹 Camera Feeds</li>
+      <li>📈 Alerts</li>
+      <li>🗂️ Files</li>
+      <li>⚙️ Settings</li>
+    </ul>
+  </div>
+
+  <div class="main">
+    <div class="video-grid">
+      <div class="video-feed">
+        <img src="Dataset/Image/test1.jpeg" alt="Feed 1" />
+      </div>
+      <div class="video-feed">
+        <img src="Dataset/Image/test2.jpeg" alt="Feed 2" />
+      </div>
+    </div>
+
+    <div class="charts">
+      <h3>📊 Alert Metrics (Coming Soon)</h3>
+    </div>
+
+    <div class="alerts">
+      <h3>🔔 Recent Alerts (Coming Soon)</h3>
+    </div>
+  </div>
+
+  <div class="chat-panel">
+    <div class="chat-header">🤖 AI Chat Assistant</div>
+    <div class="chat-messages" id="chatMessages">
+      <div><strong>AI:</strong> Welcome to the dashboard. How can I help?</div>
+    </div>
+    <div class="chat-input">
+      <textarea id="chatInput" rows="1" placeholder="Type your message..."></textarea>
+    </div>
+  </div>
+
+  <script>
+    const input = document.getElementById("chatInput");
+    const chatBox = document.getElementById("chatMessages");
+
+    input.addEventListener("keypress", function(e) {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        const message = input.value.trim();
+        if (message) {
+          const userMsg = document.createElement("div");
+          userMsg.innerHTML = `<strong>You:</strong> ${message}`;
+          chatBox.appendChild(userMsg);
+          input.value = "";
+
+          const aiMsg = document.createElement("div");
+          aiMsg.innerHTML = `<strong>AI:</strong> Thinking...`;
+          chatBox.appendChild(aiMsg);
+
+          chatBox.scrollTop = chatBox.scrollHeight;
+
+          // Simulate AI response
+          setTimeout(() => {
+            aiMsg.innerHTML = `<strong>AI:</strong> This is a static example reply.`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+          }, 1000);
+        }
+      }
+    });
+  </script>
+</body>
+</html>
