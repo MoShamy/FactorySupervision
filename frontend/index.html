@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Factory Supervision Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/chat.css">
+</head>
+<body>
+
+  <div class="sidebar">
+    <h2>🏭 Factory Control</h2>
+    <ul class="nav-menu">
+      <li class="nav-item active" data-page="dashboard">
+        <span class="nav-icon">📊</span>
+        <span>Dashboard</span>
+      </li>
+      <li class="nav-item" data-page="cameras">
+        <span class="nav-icon">📹</span>
+        <span>Camera Feeds</span>
+      </li>
+      <li class="nav-item" data-page="alerts">
+        <span class="nav-icon">🚨</span>
+        <span>Alerts & Reports</span>
+      </li>
+      <li class="nav-item" data-page="analytics">
+        <span class="nav-icon">📈</span>
+        <span>Analytics</span>
+      </li>
+      <li class="nav-item" data-page="files">
+        <span class="nav-icon">🗂️</span>
+        <span>File Manager</span>
+      </li>
+      <li class="nav-item" data-page="settings">
+        <span class="nav-icon">⚙️</span>
+        <span>Settings</span>
+      </li>
+    </ul>
+  </div>
+
+  <div class="main" id="mainContent">
+    <!-- Content will be loaded dynamically -->
+  </div>
+
+  <!-- Chat Panel -->
+  <div class="chat-panel" id="chatPanel">
+    <div class="chat-content">
+      <div class="chat-header">
+        <div class="chat-header-left">
+          <span class="chat-icon">🤖</span>
+          <span>AI Assistant</span>
+          <div class="status-dot"></div>
+        </div>
+        <button class="chat-toggle" id="chatToggle" title="Minimize chat">
+          <span>−</span>
+        </button>
+      </div>
+      <div class="chat-messages" id="chatMessages">
+        <!-- Messages will be added here dynamically using linked list -->
+      </div>
+      <div class="chat-input">
+        <div class="input-container">
+          <textarea id="chatInput" rows="1" placeholder="Ask about production status, analytics, or system health..."></textarea>
+          <button class="send-button" id="sendButton">
+            <span>➤</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <button class="chat-toggle" id="chatToggleCollapsed" style="display: none;" title="Open chat">
+      <span class="chat-icon">💬</span>
+    </button>
+  </div>
+
+  <!-- Scripts -->
+  <script src="assets/js/messageList.js"></script>
+  <script src="assets/js/chat.js"></script>
+  <script src="assets/js/navigation.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

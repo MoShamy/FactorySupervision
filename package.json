@@ -1,19 +1,32 @@
 {
-  "name": "factorysupervision",
-  "version": "1.0.0",
-  "description": "FactorySupervision is an AI-powered system for monitoring production lines using computer vision. It detects objects, tracks their movement across virtual lines, and provides real-time analysis of production status with AI-powered insights.",
-  "main": "server.js",
+  "name": "factory-supervision",
+  "version": "2.0.0",
+  "description": "Factory Supervision - AI-powered system for monitoring production lines using computer vision. Features real-time object detection, conveyor belt monitoring, and AI-powered insights.",
+  "main": "frontend/dashboard_server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "./start_system.sh",
+    "start:frontend": "node frontend/dashboard_server.js",
+    "start:backend": "cd backend && python3 -m uvicorn fastapi_server:app --host 0.0.0.0 --port 8000 --reload",
+    "dev": "npm run start",
+    "vision": "python main.py",
+    "chat-only": "node frontend/dashboard_server.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/MoShamy/FactorySupervision.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "factory-automation",
+    "computer-vision",
+    "ai-monitoring",
+    "conveyor-belt",
+    "yolo",
+    "production-line",
+    "quality-control"
+  ],
+  "author": "Factory Supervision Team",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/MoShamy/FactorySupervision/issues"
   },

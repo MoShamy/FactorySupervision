@@ -10,10 +10,17 @@ from fastapi.responses import FileResponse
 from fastapi import HTTPException
 # from notifications import send_push_notification, expo_push_tokens
 import requests
-from detector import CameraMotionDetector, recorded_videos_queue, lock
+import sys
+
+# Add project directories to path
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'computer_vision'))
+sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config'))
+
+from computer_vision.motion_detector import CameraMotionDetector, recorded_videos_queue, lock
 from pydantic import BaseModel
 
-import status
+import config.system_status as status
 from fastapi import Request
 
 

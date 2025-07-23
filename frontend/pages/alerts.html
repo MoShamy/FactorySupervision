@@ -1,0 +1,115 @@
+<div class="page-header">
+  <div class="page-title">
+    <h1>🚨 System Alerts</h1>
+    <p>Monitor and manage all system notifications</p>
+  </div>
+  <div class="page-actions">
+    <button class="btn-secondary">
+      🗑️ Clear All
+    </button>
+    <button class="btn-primary">
+      🔄 Refresh
+    </button>
+  </div>
+</div>
+
+<div class="alerts-filters">
+  <div class="filter-group">
+    <label>Filter by Type:</label>
+    <select>
+      <option value="all">All Alerts</option>
+      <option value="critical">Critical</option>
+      <option value="warning">Warning</option>
+      <option value="info">Information</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <label>Time Range:</label>
+    <select>
+      <option value="today">Today</option>
+      <option value="week">This Week</option>
+      <option value="month">This Month</option>
+      <option value="all">All Time</option>
+    </select>
+  </div>
+</div>
+
+<div class="alerts-container">
+  <div class="alert-item critical">
+    <div class="alert-icon">🔴</div>
+    <div class="alert-content">
+      <h4>Machine Malfunction Detected</h4>
+      <p>Production Line C has stopped unexpectedly. Immediate attention required.</p>
+      <div class="alert-meta">
+        <span class="alert-time">15 minutes ago</span>
+        <span class="alert-location">Line C - Station 3</span>
+      </div>
+    </div>
+    <div class="alert-actions">
+      <button class="btn-small btn-primary">Acknowledge</button>
+      <button class="btn-small btn-secondary">Dismiss</button>
+    </div>
+  </div>
+
+  <div class="alert-item warning">
+    <div class="alert-icon">⚠️</div>
+    <div class="alert-content">
+      <h4>Temperature Above Normal</h4>
+      <p>Packaging area temperature is 5°C above recommended levels.</p>
+      <div class="alert-meta">
+        <span class="alert-time">1 hour ago</span>
+        <span class="alert-location">Packaging Zone</span>
+      </div>
+    </div>
+    <div class="alert-actions">
+      <button class="btn-small btn-primary">Acknowledge</button>
+      <button class="btn-small btn-secondary">Dismiss</button>
+    </div>
+  </div>
+
+  <div class="alert-item warning">
+    <div class="alert-icon">⚠️</div>
+    <div class="alert-content">
+      <h4>Maintenance Schedule Due</h4>
+      <p>Routine maintenance for conveyor belt B is overdue by 2 days.</p>
+      <div class="alert-meta">
+        <span class="alert-time">2 hours ago</span>
+        <span class="alert-location">Conveyor System</span>
+      </div>
+    </div>
+    <div class="alert-actions">
+      <button class="btn-small btn-primary">Schedule</button>
+      <button class="btn-small btn-secondary">Dismiss</button>
+    </div>
+  </div>
+
+  <div class="alert-item info">
+    <div class="alert-icon">ℹ️</div>
+    <div class="alert-content">
+      <h4>Shift Change Completed</h4>
+      <p>Evening shift has successfully taken over all operations.</p>
+      <div class="alert-meta">
+        <span class="alert-time">4 hours ago</span>
+        <span class="alert-location">All Areas</span>
+      </div>
+    </div>
+    <div class="alert-actions">
+      <button class="btn-small btn-secondary">Dismiss</button>
+    </div>
+  </div>
+
+  <div class="alert-item info">
+    <div class="alert-icon">✅</div>
+    <div class="alert-content">
+      <h4>Quality Check Passed</h4>
+      <p>Batch #A-1247 has passed all quality control standards.</p>
+      <div class="alert-meta">
+        <span class="alert-time">6 hours ago</span>
+        <span class="alert-location">Quality Control</span>
+      </div>
+    </div>
+    <div class="alert-actions">
+      <button class="btn-small btn-secondary">Dismiss</button>
+    </div>
+  </div>
+</div>

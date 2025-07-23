@@ -1,0 +1,118 @@
+<div class="page-header">
+  <div class="page-title">
+    <h1>📹 Camera Feeds</h1>
+    <p>Monitor all production areas in real-time</p>
+  </div>
+  <div class="page-actions">
+    <button class="btn-secondary">
+      🔍 Fullscreen
+    </button>
+    <button class="btn-primary">
+      🔄 Refresh
+    </button>
+  </div>
+</div>
+
+<div class="camera-controls">
+  <div class="control-group">
+    <label>View Mode:</label>
+    <select>
+      <option value="grid">Grid View</option>
+      <option value="focus">Focus View</option>
+      <option value="carousel">Carousel</option>
+    </select>
+  </div>
+  <div class="control-group">
+    <label>Quality:</label>
+    <select>
+      <option value="high">High (1080p)</option>
+      <option value="medium" selected>Medium (720p)</option>
+      <option value="low">Low (480p)</option>
+    </select>
+  </div>
+</div>
+
+<div class="cameras-grid full-grid">
+  <div class="camera-feed-large">
+    <div class="camera-header">
+      <h3>📹 Production Line A</h3>
+      <div class="camera-status">
+        <span class="status-live">● LIVE</span>
+        <span class="camera-controls">
+          <button>🔴</button>
+          <button>📸</button>
+        </span>
+      </div>
+    </div>
+    <div class="camera-display">
+      <video class="camera-video" autoplay muted>
+        <source src="path/to/video/stream" type="video/mp4">
+        <div class="camera-placeholder-large">
+          <div class="camera-icon">📹</div>
+          <p>Production Line A</p>
+          <span class="status-live">● LIVE STREAM</span>
+        </div>
+      </video>
+    </div>
+  </div>
+
+  <div class="camera-feed-large">
+    <div class="camera-header">
+      <h3>📹 Quality Control Station</h3>
+      <div class="camera-status">
+        <span class="status-live">● LIVE</span>
+        <span class="camera-controls">
+          <button>🔴</button>
+          <button>📸</button>
+        </span>
+      </div>
+    </div>
+    <div class="camera-display">
+      <div class="camera-placeholder-large">
+        <div class="camera-icon">📹</div>
+        <p>Quality Control</p>
+        <span class="status-live">● LIVE STREAM</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="camera-feed-large">
+    <div class="camera-header">
+      <h3>📹 Packaging Area</h3>
+      <div class="camera-status">
+        <span class="status-live">● LIVE</span>
+        <span class="camera-controls">
+          <button>🔴</button>
+          <button>📸</button>
+        </span>
+      </div>
+    </div>
+    <div class="camera-display">
+      <div class="camera-placeholder-large">
+        <div class="camera-icon">📹</div>
+        <p>Packaging Area</p>
+        <span class="status-live">● LIVE STREAM</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="camera-feed-large">
+    <div class="camera-header">
+      <h3>📹 Storage Zone</h3>
+      <div class="camera-status">
+        <span class="status-offline">● OFFLINE</span>
+        <span class="camera-controls">
+          <button disabled>🔴</button>
+          <button disabled>📸</button>
+        </span>
+      </div>
+    </div>
+    <div class="camera-display offline">
+      <div class="camera-placeholder-large">
+        <div class="camera-icon">📹</div>
+        <p>Storage Zone</p>
+        <span class="status-offline">● OFFLINE</span>
+      </div>
+    </div>
+  </div>
+</div>

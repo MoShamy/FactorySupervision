@@ -1,0 +1,135 @@
+<div class="page-header"></div>
+  <div class="page-title">
+    <h1>🏭 Factory Dashboard</h1>
+    <p>Real-time overview of your factory operations</p>
+  </div>
+  <div class="page-actions">
+    <button class="btn-primary" onclick="location.reload()">
+      🔄 Refresh
+    </button>
+  </div>
+</div>
+
+<div class="dashboard-grid">
+  <div class="metric-card">
+    <div class="metric-header">
+      <h3>Production Status</h3>
+      <span class="status-indicator active"></span>
+    </div>
+    <div class="metric-value">
+      <span class="number">94.2%</span>
+      <span class="label">Efficiency</span>
+    </div>
+    <div class="metric-trend">
+      <span class="trend-up">↗ +2.1% from yesterday</span>
+    </div>
+  </div>
+
+  <div class="metric-card">
+    <div class="metric-header">
+      <h3>Active Machines</h3>
+      <span class="status-indicator active"></span>
+    </div>
+    <div class="metric-value">
+      <span class="number">28/30</span>
+      <span class="label">Online</span>
+    </div>
+    <div class="metric-trend">
+      <span class="trend-neutral">→ 2 machines in maintenance</span>
+    </div>
+  </div>
+
+  <div class="metric-card">
+    <div class="metric-header">
+      <h3>Quality Score</h3>
+      <span class="status-indicator active"></span>
+    </div>
+    <div class="metric-value">
+      <span class="number">98.7%</span>
+      <span class="label">Pass Rate</span>
+    </div>
+    <div class="metric-trend">
+      <span class="trend-up">↗ +0.3% this week</span>
+    </div>
+  </div>
+
+  <div class="metric-card">
+    <div class="metric-header">
+      <h3>Daily Output</h3>
+      <span class="status-indicator active"></span>
+    </div>
+    <div class="metric-value">
+      <span class="number">1,247</span>
+      <span class="label">Units</span>
+    </div>
+    <div class="metric-trend">
+      <span class="trend-up">↗ On track to meet target</span>
+    </div>
+  </div>
+</div>
+
+<div class="dashboard-content">
+  <div class="content-section">
+    <h2>📹 Live Camera Feeds</h2>
+    <div class="camera-grid">
+      <div class="camera-feed">
+        <div class="camera-placeholder">
+          <div class="camera-icon">📹</div>
+          <p>Production Line A</p>
+          <span class="status-live">● LIVE</span>
+        </div>
+      </div>
+      <div class="camera-feed">
+        <div class="camera-placeholder">
+          <div class="camera-icon">📹</div>
+          <p>Quality Control</p>
+          <span class="status-live">● LIVE</span>
+        </div>
+      </div>
+      <div class="camera-feed">
+        <div class="camera-placeholder">
+          <div class="camera-icon">📹</div>
+          <p>Packaging Area</p>
+          <span class="status-live">● LIVE</span>
+        </div>
+      </div>
+      <div class="camera-feed">
+        <div class="camera-placeholder">
+          <div class="camera-icon">📹</div>
+          <p>Storage Zone</p>
+          <span class="status-live">● LIVE</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-section">
+    <h2>🚨 Recent Alerts</h2>
+    <div class="alerts-list">
+      <div class="alert-item warning">
+        <div class="alert-icon">⚠️</div>
+        <div class="alert-content">
+          <h4>Machine Maintenance Due</h4>
+          <p>Production Line B requires scheduled maintenance</p>
+          <span class="alert-time">2 hours ago</span>
+        </div>
+      </div>
+      <div class="alert-item info">
+        <div class="alert-icon">ℹ️</div>
+        <div class="alert-content">
+          <h4>Shift Change Complete</h4>
+          <p>Evening shift has taken over operations</p>
+          <span class="alert-time">4 hours ago</span>
+        </div>
+      </div>
+      <div class="alert-item success">
+        <div class="alert-icon">✅</div>
+        <div class="alert-content">
+          <h4>Quality Check Passed</h4>
+          <p>Batch #A-1247 passed all quality standards</p>
+          <span class="alert-time">6 hours ago</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

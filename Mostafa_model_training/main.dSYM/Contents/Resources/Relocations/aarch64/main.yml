@@ -1,0 +1,5 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/mostafa/Desktop/FactorySupervision/Mostafa_model_training/main'
+relocations:     []
+...

@@ -10,11 +10,13 @@ import sys
 import os
 from datetime import datetime
 
-# Add current directory to path
+# Add project directories to path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'computer_vision'))
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config'))
 
+from computer_vision.conveyor_vision_system import OperationStatus
 
-from YoloLineTest import OperationStatus
 
 def main():
     """Main pipeline for Factory Supervision."""
