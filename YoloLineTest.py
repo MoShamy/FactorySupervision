@@ -13,10 +13,10 @@ class object:
     centery: float
     detect: bool
 
-def OperationStatus(video_path, out_path, line, factor, cross_threshold, targets, obj_per_time, time_th, bounds):
+def OperationStatus(video_path, out_path, line, fx,fy,con_line,targets, obj_per_time, time_th, bounds):
     # global functioning 
     cap = cv2.VideoCapture(video_path)
-    model = YOLO("Our_Models/Best_Models/bestdet.pt") 
+    model = YOLO("best80.pt") 
 
     # output video writer setup
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -29,14 +29,15 @@ def OperationStatus(video_path, out_path, line, factor, cross_threshold, targets
     out_video = cv2.VideoWriter(output_video_path, fourcc, fps, (width, height))
 
     # vertical line position (middle of frame but can tweak it a lot)
-    line_x = int(width * factor)
-    line_y = int(height * factor)
+    line_x = int(width * fx)
+    line_y = int(height * fy)
     last_cross_time = time.time()
     start_time = time.time()
 
     time_between_crossings = []
     obj_count = 0
     frame_count = 0
+    frames =[]
     previous_positions = {}
     anamoly = {}
 
@@ -45,6 +46,8 @@ def OperationStatus(video_path, out_path, line, factor, cross_threshold, targets
         frame_count += 1
         if not ret:
             break
+
+        frames.append(frame)
 
         results = model.track(source=frame, conf=0.1, iou=0.5, show=False, persist=True, tracker="botsort.yaml", verbose = False)
 
@@ -80,9 +83,10 @@ def OperationStatus(video_path, out_path, line, factor, cross_threshold, targets
                     prevc = prev.centery if line else prev.centerx
                     center = cy if line else cx
                     vir_line = line_y if line else line_x
+                    condition = ((prev.centerx < line_x  or prev.centery < line_y) and  (cx >= line_x or cy >= line_y)) if con_line else (prevc < vir_line) and (center >= vir_line)
 
                     if prev != obj:
-                        if (prevc < vir_line) and (center >= vir_line):
+                        if condition:
                             if prev.detect == False:
                                 obj_count += 1
                             prev.detect = True
@@ -132,6 +136,7 @@ def OperationStatus(video_path, out_path, line, factor, cross_threshold, targets
                     f.write(f"Too Slow on {readable_time}\n")
                 functioning = False
             else:
+                
                 with open(out_path, "a") as f:
                     f.write(f"Stopped on {readable_time}\n")
                 functioning = False
