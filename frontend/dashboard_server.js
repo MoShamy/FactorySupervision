@@ -8,8 +8,19 @@ app.use(express.json());
 const cors = require("cors");
 app.use(cors());
 
+// Add cache-control headers for CSS files to prevent caching issues
+app.use('/assets/css', (req, res, next) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  next();
+});
+
 // Serve static files from the current directory
-app.use(express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname), {
+  maxAge: 0,
+  etag: false
+}));
 
 // Azure OpenAI config
 const openai = new OpenAI({

@@ -52,6 +52,9 @@ class ChatSystem {
 
     // Scroll detection for scroll-to-bottom button
     this.chatBox.addEventListener('scroll', () => this.handleScroll());
+    
+    // Drag functionality
+    this.setupDragFunctionality();
   }
 
   /**
@@ -182,6 +185,97 @@ class ChatSystem {
         }
       }, 300);
     }
+  }
+
+  /**
+   * Setup drag functionality for chat panel
+   */
+  setupDragFunctionality() {
+    const header = this.chatPanel.querySelector('.chat-header');
+    let isDragging = false;
+    let currentX;
+    let currentY;
+    let initialX;
+    let initialY;
+    let xOffset = 0;
+    let yOffset = 0;
+
+    const dragStart = (e) => {
+      if (this.chatPanel.classList.contains('collapsed')) return;
+      
+      // Only allow dragging from header
+      if (!header.contains(e.target) || e.target.closest('.chat-toggle')) return;
+      
+      isDragging = true;
+      
+      if (e.type === "touchstart") {
+        initialX = e.touches[0].clientX - xOffset;
+        initialY = e.touches[0].clientY - yOffset;
+      } else {
+        initialX = e.clientX - xOffset;
+        initialY = e.clientY - yOffset;
+      }
+
+      header.style.cursor = 'grabbing';
+      this.chatPanel.style.transition = 'none';
+    };
+
+    const dragEnd = () => {
+      if (!isDragging) return;
+      
+      isDragging = false;
+      header.style.cursor = 'grab';
+      this.chatPanel.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+      
+      // Keep chat panel within viewport bounds
+      const rect = this.chatPanel.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      
+      let newX = xOffset;
+      let newY = yOffset;
+      
+      // Constrain to viewport
+      if (rect.left < 0) newX = xOffset - rect.left;
+      if (rect.right > viewportWidth) newX = xOffset - (rect.right - viewportWidth);
+      if (rect.top < 0) newY = yOffset - rect.top;
+      if (rect.bottom > viewportHeight) newY = yOffset - (rect.bottom - viewportHeight);
+      
+      if (newX !== xOffset || newY !== yOffset) {
+        xOffset = newX;
+        yOffset = newY;
+        this.chatPanel.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
+      }
+    };
+
+    const drag = (e) => {
+      if (!isDragging) return;
+      
+      e.preventDefault();
+      
+      if (e.type === "touchmove") {
+        currentX = e.touches[0].clientX - initialX;
+        currentY = e.touches[0].clientY - initialY;
+      } else {
+        currentX = e.clientX - initialX;
+        currentY = e.clientY - initialY;
+      }
+
+      xOffset = currentX;
+      yOffset = currentY;
+
+      this.chatPanel.style.transform = `translate(${currentX}px, ${currentY}px)`;
+    };
+
+    // Mouse events
+    header.addEventListener('mousedown', dragStart);
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('mouseup', dragEnd);
+
+    // Touch events for mobile
+    header.addEventListener('touchstart', dragStart, { passive: true });
+    document.addEventListener('touchmove', drag, { passive: false });
+    document.addEventListener('touchend', dragEnd);
   }
 
   /**

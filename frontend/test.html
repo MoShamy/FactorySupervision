@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS Test</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/main.css?v=1.0.3">
+  <style>
+    .test-element {
+      background: red;
+      color: white;
+      padding: 20px;
+      margin: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-element">
+    This should have red background (inline CSS test)
+  </div>
+  
+  <div class="sidebar">
+    <h2>🏭 This should be styled by main.css</h2>
+  </div>
+  
+  <div class="card">
+    <h3>This is a card element</h3>
+    <p>Should have glass-morphism styling from main.css</p>
+  </div>
+  
+  <!-- Test backdrop-filter support -->
+  <div style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); border-radius: 16px; padding: 24px; margin: 20px; border: 1px solid rgba(255, 255, 255, 0.2);">
+    <h3>Direct inline glass-morphism test</h3>
+    <p>This should have glass effect if backdrop-filter is supported</p>
+  </div>
+  
+  <!-- Fallback test without backdrop-filter -->
+  <div style="background: rgba(255, 255, 255, 0.2); border-radius: 16px; padding: 24px; margin: 20px; border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+    <h3>Fallback styling test</h3>
+    <p>This should work without backdrop-filter</p>
+  </div>
+</body>
+</html>

@@ -312,6 +312,12 @@ cat .env
 # Verify both servers running
 curl http://localhost:3000/health
 curl http://localhost:8000/status
+
+# If servers aren't running, start them:
+npm start
+# OR manually:
+# Terminal 1: npm run start:backend
+# Terminal 2: npm run start:frontend
 ```
 
 **Model Not Found**
