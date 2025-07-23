@@ -21,7 +21,7 @@ def main():
     
     
     # Test video path
-    test_video = "All Edits Coffee .mp4"
+    test_video = "Slow Only Coffee.mp4"
     
     if os.path.exists(test_video):
         print(f"📹 Analyzing video: {test_video}")
@@ -30,15 +30,16 @@ def main():
         os.makedirs("logs", exist_ok=True)
         
         line = False  # True for horizontal line, False for vertical line
-        factor = 0.5  # Line position factor (35% of width/height)
-        cross_threshold = 4  # Time threshold for stopped detection
+        fx = 0.5 # Line width position factor 
+        fy = 0.7 # line height position factor
+        con_line = False # specifies the condition needed whether to check only vertical or horizontal direction or both vertical and horizontal direction of the line
         targets = [2]  # Target classes: Box, Fruit, bag, bottle, jar, mask, pallet
         obj_per_time = 3  # Expected objects per time period
-        time_th = 40  # Time threshold for production check (seconds)
+        time_th = 35  # Time threshold for production check (seconds)
         bounds = 1  # Margin of error for object count
         
         # Run analysis
-        OperationStatus(test_video, out_path, line, factor, cross_threshold, targets, obj_per_time, time_th, bounds)
+        OperationStatus(test_video, out_path, line, fx,fy,con_line, targets, obj_per_time, time_th, bounds)
         
             
     else:
