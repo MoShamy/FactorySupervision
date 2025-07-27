@@ -83,7 +83,11 @@ class ConveyorVisionSystem:
         self.time_threshold = 0
         self.bounds = 0
         self.output_log_path = ""
-    
+        self.frames = []
+        self.anomalies = {}
+
+
+
     def initialize_video_capture(self, video_path, output_video_path="output_processed.mp4"):
         """Initialize video capture and output writer"""
         self.cap = cv2.VideoCapture(video_path)
@@ -136,6 +140,14 @@ class ConveyorVisionSystem:
             verbose=False
         )
         return results
+    
+    def _frames_create(frames,output_path, fps=20):
+        height, width, _ = frames[0].shape
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # Use 'XVID' for .avi
+        out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
+        for frame in frames:
+            out.write(frame)
+        out.release()
     
     def process_detected_object(self, box, obj_id, obj_class, frame):
         """Process a single detected object"""
@@ -236,7 +248,11 @@ class ConveyorVisionSystem:
         else:
             self._log_status("Stopped", readable_time)
             functioning = False
-        
+            self._frames_create(self.frames[frame_count - 60 : frame_count],"out_stop.mp4", fps=20)
+            with open(self.out_video, "a") as f:
+                f.write(f"Stopped on {readable_time}\n")
+            functioning = False
+
         # Notify backend if status changed
         self._notify_status_change(functioning)
         
@@ -352,7 +368,7 @@ class ConveyorVisionSystem:
         self.cleanup()
 
 
-def OperationStatus(video_path, out_path, line, factor, cross_threshold, targets, obj_per_time, time_th, bounds):
+def OperationStatus(video_path, out_path, line, fx,fy,con_line,targets, obj_per_time, time_th, bounds):
     """Legacy function wrapper for backward compatibility"""
     vision_system = ConveyorVisionSystem()
     vision_system.run_monitoring(

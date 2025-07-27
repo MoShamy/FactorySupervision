@@ -63,7 +63,7 @@ app.get("/health", async (req, res) => {
 
 // Serve the dashboard
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "factory_dashboard.html"));
+  res.sendFile(path.join(__dirname, "index.html"));
 });
 
 // Real backend functions integrated with FastAPI backend
@@ -346,7 +346,7 @@ Keep responses concise, helpful, and focused on factory operations. Use technica
   }
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`🏭 Factory Dashboard Server Started`);
   console.log(`📡 Server: http://localhost:${PORT}`);
