@@ -13,28 +13,23 @@ class object:
     centery: float
     detect: bool
 
+def frames_create(frames,output_path, fps=20):
+    height, width, layer = frames[0].shape
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # Use 'XVID' for .avi
+    out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
+    for frame in frames:
+        out.write(frame)
+    out.release()
+       
 
-def OperationStatus(video_path, out_path, line, factor, cross_threshold, targets, obj_per_time, time_th, bounds):
+def OperationStatus(video_path, out_path, line, fx,fy,con_line,targets, obj_per_time, time_th, bounds):
     # global functioning 
     cap = cv2.VideoCapture(video_path)
-    model = YOLO("Our_Models/Best_Models/bestdet.pt") 
-
- # Box: 0, Fruit: 1, bag: 2, bottle: 3, jar: 4, mask: 5, pallet: 6
- # video_path: for the input video stream 
- # out_path: for the log
- # line: boolean used to see if we are using a vertical or horizotal line
- # factor: what will be multiplied with either the eidth of height for the line
- # cross_threshold: the time before the process is considered to have stopped
- # targets: a list containing the target classes
- # obj_per_time: the usual object per specific time produced in production
- # time_th: Minimum time that has to pass before checking the state of operation
- # bounds: the margin of error allowed for the number of products produced
-
+    model = YOLO("best80.pt") 
 
     # output video writer setup
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-
     fps = cap.get(cv2.CAP_PROP_FPS)
     
     # Initialize VideoWriter to save the processed video
@@ -43,16 +38,17 @@ def OperationStatus(video_path, out_path, line, factor, cross_threshold, targets
     out_video = cv2.VideoWriter(output_video_path, fourcc, fps, (width, height))
 
     # vertical line position (middle of frame but can tweak it a lot)
-    line_x = int(width * factor)
-    line_y = int(height * factor)
+    line_x = int(width * fx)
+    line_y = int(height * fy)
     last_cross_time = time.time()
     start_time = time.time()
 
-    avg_time = 0.0
     time_between_crossings = []
     obj_count = 0
     frame_count = 0
+    frames =[]
     previous_positions = {}
+    anamoly = {}
 
     while cap.isOpened():
         ret, frame = cap.read()
@@ -60,7 +56,9 @@ def OperationStatus(video_path, out_path, line, factor, cross_threshold, targets
         if not ret:
             break
 
-        results = model.track(source=frame, conf=0.1, iou=0.5, show=False, persist=True, tracker="botsort.yaml")
+        frames.append(frame)
+
+        results = model.track(source=frame, conf=0.1, iou=0.5, show=False, persist=True, tracker="botsort.yaml", verbose = False)
 
         # Draw the virtual line (visualization)
         if line:  # horizontal line
@@ -74,16 +72,17 @@ def OperationStatus(video_path, out_path, line, factor, cross_threshold, targets
             classes = results[0].boxes.cls.cpu().numpy()
             
             for box, Id, clas in zip(boxes, IDs, classes):
-                if clas in targets:
-                    obj_id = Id
-                    x1, y1, x2, y2 = box
+                obj_id = Id
+                x1, y1, x2, y2 = box
             
-                    cx = int((x1 + x2) / 2)
-                    cy = int((y1 + y2) / 2)
+                cx = int((x1 + x2) / 2)
+                cy = int((y1 + y2) / 2)
 
-                    obj = object(cx, cy, False)
+                obj = object(cx, cy, False)
+                
+
+                if clas in targets:
                     prev = previous_positions.get(obj_id, obj)
-
                     # drawing the bounding boxes and the ID Labels
                     cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (255, 255, 0), 2)
                     cv2.circle(frame, (cx, cy), 5, (0, 255, 0), -1)
@@ -93,9 +92,10 @@ def OperationStatus(video_path, out_path, line, factor, cross_threshold, targets
                     prevc = prev.centery if line else prev.centerx
                     center = cy if line else cx
                     vir_line = line_y if line else line_x
+                    condition = ((prev.centerx < line_x  or prev.centery < line_y) and  (cx >= line_x or cy >= line_y)) if con_line else (prevc < vir_line) and (center >= vir_line)
 
                     if prev != obj:
-                        if (prevc < vir_line) and (center >= vir_line):
+                        if condition:
                             if prev.detect == False:
                                 obj_count += 1
                             prev.detect = True
@@ -110,8 +110,13 @@ def OperationStatus(video_path, out_path, line, factor, cross_threshold, targets
                         temp_obj.centerx = obj.centerx
                         temp_obj.centery = obj.centery
                         previous_positions[obj_id] = temp_obj
+                else:
+                    if anamoly.get(obj_id) == None:
+                        with open(out_path, "a") as f:
+                            f.write(f"a {model.names[int(clas)]} was detected on the line at {time.ctime(time.time())}\n")
+                        obj.detect = True
+                        anamoly[obj_id] = obj
         
-
         # Display object count on frame
         cv2.putText(frame, f"Count: {obj_count}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         
@@ -124,10 +129,12 @@ def OperationStatus(video_path, out_path, line, factor, cross_threshold, targets
         cv2.imshow("Live Preview", display_frame)
 
         if time.time() - start_time >= time_th:
-
             readable_time = time.ctime(time.time())
             print(obj_count)
             if obj_count >= obj_per_time - bounds and obj_count <= obj_per_time + bounds:
+                if status.functioning == False:
+                    with open(out_path, "a") as f:
+                        f.write(f"Returned to normal operation on {readable_time}\n")
                 functioning = True
             elif obj_count > obj_per_time + bounds:
                 with open(out_path, "a") as f:
@@ -138,19 +145,22 @@ def OperationStatus(video_path, out_path, line, factor, cross_threshold, targets
                     f.write(f"Too Slow on {readable_time}\n")
                 functioning = False
             else:
+                frames_create(frames[frame_count - 60 : frame_count],"out_stop.mp4", fps=20)
                 with open(out_path, "a") as f:
                     f.write(f"Stopped on {readable_time}\n")
                 functioning = False
-
 
             print("🔄 status :", functioning, "while global is ", status.functioning)
             if functioning != status.functioning:
                 try:
                     print("🔄 Notifying backend of status change:", functioning, "while global is ", status.functioning)
-                    requests.post("http://localhost:8000/internal-update-status", json={"functioning": functioning})
+                    status.functioning = functioning
+                    print("after status change:", functioning, "while global is ", status.functioning)
+                    # The request is commented as it does not reflect the change that the api does to functioning to this function so for now we change it here 
+                    requests.post("http://localhost:8001/internal-update-status", json={"functioning": functioning}) # chnage the local host accordingly
                 except Exception as e:
                     print("❌ Failed to notify backend:", e)
-
+            print(functioning)
             obj_count = 0
             start_time = time.time()
 
@@ -162,7 +172,21 @@ def OperationStatus(video_path, out_path, line, factor, cross_threshold, targets
 
     # Release resources
     cap.release()
-
     out_video.release()
     cv2.destroyAllWindows()
 
+
+# Chatgpt suggestion
+
+# if functioning != status.functioning:
+#     try:
+#         print("🔄 Notifying backend of status change:", functioning)
+#         response = requests.post(
+#             "http://localhost:8001/internal-update-status",
+#             json={"functioning": functioning}
+#         )
+#         result = response.json()
+#         if result["updated"]:
+#             status.functioning = result["functioning"]
+#     except Exception as e:
+#         print("❌ Failed to notify backend:", e)
