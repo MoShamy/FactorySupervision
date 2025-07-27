@@ -20,7 +20,7 @@ class ChatSystem {
     
     // Configuration
     this.config = {
-      chatEndpoint: "http://localhost:3000/chat",
+      chatEndpoint: "http://localhost:3000/api/chat",
       retryAttempts: 3,
       timeout: 30000
     };
@@ -441,8 +441,10 @@ class ChatSystem {
       // Remove typing indicator
       this.removeTypingIndicator(typingIndicator);
       
-      // Add AI response
-      if (data.reply) {
+      // Add AI response (updated for simple server response format)
+      if (data.response) {
+        this.addMessage("AI", data.response);
+      } else if (data.reply) {
         this.addMessage("AI", data.reply);
       } else {
         this.addMessage("AI", "I received your message but couldn't generate a proper response. Please try again.", true);
