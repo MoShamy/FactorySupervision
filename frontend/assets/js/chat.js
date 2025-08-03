@@ -20,7 +20,7 @@ class ChatSystem {
     
     // Configuration
     this.config = {
-      chatEndpoint: "http://localhost:3000/api/chat",
+      chatEndpoint: "http://localhost:3000/chat",
       retryAttempts: 3,
       timeout: 30000
     };
@@ -32,9 +32,13 @@ class ChatSystem {
    * Initialize the chat system
    */
   init() {
+    console.log('🤖 Initializing chat system...');
     this.setupEventListeners();
     this.addAnimationStyles();
     this.initializeChat();
+    
+    // Test connection on initialization
+    this.testConnection();
   }
 
   /**
@@ -499,14 +503,36 @@ class ChatSystem {
    */
   async checkServerConnection() {
     try {
-      const response = await fetch('http://localhost:3000/health');
+      const response = await fetch(this.config.chatEndpoint.replace('/chat', '/health'), {
+        method: 'GET',
+        signal: AbortSignal.timeout(5000)
+      });
+      
       if (response.ok) {
         const health = await response.json();
-        const backendStatus = health.services?.fastapi_backend === 'connected' ? '✅' : '⚠️';
-        this.addMessage("System", `${backendStatus} Connected to Factory Supervision System`);
+        console.log('🟢 Server connection healthy:', health);
+        return true;
+      } else {
+        console.warn('🟡 Server returned non-OK status:', response.status);
+        return false;
       }
     } catch (error) {
-      this.addMessage("System", "⚠️ System offline - Please start the servers");
+      console.error('🔴 Server connection failed:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Test connection on initialization
+   */
+  async testConnection() {
+    console.log('🧪 Testing chat connection...');
+    const isConnected = await this.checkServerConnection();
+    
+    if (isConnected) {
+      this.addMessage("System", "✅ Chat system ready! Ask me about production status, analytics, or system health.", false, true);
+    } else {
+      this.addMessage("System", "⚠️ Connection issues detected. Chat functionality may be limited.", true, true);
     }
   }
 

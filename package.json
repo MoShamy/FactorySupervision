@@ -6,11 +6,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "./start_system.sh",
-    "start:frontend": "node frontend/dashboard_server.js",
-    "start:backend": "cd backend && python3 -m uvicorn fastapi_server:app --host 0.0.0.0 --port 8000 --reload",
+    "start:frontend": "cd frontend && node dashboard_server.js",
+    "start:backend": "source tf-venv/bin/activate && cd backend && python3 -m uvicorn fastapi_server:app --host 0.0.0.0 --port 8000 --reload",
     "dev": "npm run start",
-    "vision": "python main.py",
-    "chat-only": "node frontend/dashboard_server.js"
+    "vision": "source tf-venv/bin/activate && python main.py",
+    "chat-only": "cd frontend && node dashboard_server.js"
   },
   "repository": {
     "type": "git",

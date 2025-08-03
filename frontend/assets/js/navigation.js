@@ -7,7 +7,7 @@ class NavigationSystem {
   constructor() {
     this.currentPage = 'dashboard';
     this.pages = {
-      dashboard: { title: 'Dashboard', icon: '🏭', file: 'dashboard.html' },
+      dashboard: { title: 'Dashboard', icon: '🏭', file: 'dashboard_new.html' },
       cameras: { title: 'Camera Feeds', icon: '📹', file: 'cameras.html' },
       alerts: { title: 'Alerts', icon: '🚨', file: 'alerts.html' },
       analytics: { title: 'Analytics', icon: '📊', file: 'analytics.html' },

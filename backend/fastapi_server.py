@@ -8,6 +8,7 @@ import asyncio
 from fastapi import Request
 from fastapi.responses import FileResponse
 from fastapi import HTTPException
+from typing import Optional
 # from notifications import send_push_notification, expo_push_tokens
 import requests
 import sys
@@ -23,6 +24,14 @@ from pydantic import BaseModel
 import config.system_status as status
 from fastapi import Request
 
+# Import AI Chatbot Service
+try:
+    from ai_chatbot_service import chatbot_service
+    CHATBOT_ENABLED = True
+except ImportError:
+    CHATBOT_ENABLED = False
+    print("AI Chatbot service not available - continuing without chatbot features")
+
 
 
 class NotificationPayload(BaseModel):
@@ -37,9 +46,26 @@ event_loop = asyncio.get_event_loop()
 
 EXPO_PUSH_URL = "https://exp.host/--/api/v2/push/send"
 
-
 VIDEO_DIR = "recordings"
 
+# Initialize AI Chatbot on startup
+@app.on_event("startup")
+async def startup_event():
+    if CHATBOT_ENABLED:
+        try:
+            await chatbot_service.initialize()
+            print("✅ AI Chatbot Service initialized successfully")
+        except Exception as e:
+            print(f"❌ Failed to initialize AI Chatbot Service: {e}")
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    if CHATBOT_ENABLED:
+        try:
+            chatbot_service.stop()
+            print("✅ AI Chatbot Service stopped")
+        except Exception as e:
+            print(f"❌ Error stopping AI Chatbot Service: {e}")
 
 app.add_middleware(
     CORSMiddleware,
@@ -144,4 +170,57 @@ def get_new_videos():
     
 @app.get("/status")
 def get_status():
-    return {"status": "Running" if status.functioning else "Stopped"}
+    # Get enhanced status information
+    status_info = status.get_status()
+    return {
+        "status": status_info['status_text'],
+        "functioning": status_info['functioning'],
+        "last_change": status_info['last_change'],
+        "uptime": status_info['uptime'],
+        "recent_history": status_info['recent_history']
+    }
+
+@app.post("/refresh-status")
+def refresh_status():
+    """Force refresh status from log files"""
+    status.refresh_status()
+    return {"message": "Status refreshed from logs", "status": status.get_status()}
+
+# AI Chatbot endpoints
+class ChatMessage(BaseModel):
+    message: str
+    conversation_id: Optional[str] = None
+
+@app.post("/chat")
+async def chat_with_ai(chat_request: ChatMessage):
+    """Chat with AI assistant that has context of production logs"""
+    if not CHATBOT_ENABLED:
+        raise HTTPException(status_code=503, detail="AI Chatbot service not available")
+    
+    try:
+        response = await chatbot_service.chat(
+            chat_request.message, 
+            chat_request.conversation_id
+        )
+        return response
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Chat error: {str(e)}")
+
+@app.get("/chat/status")
+async def get_chatbot_status():
+    """Get AI chatbot service status and memory info"""
+    if not CHATBOT_ENABLED:
+        return {"enabled": False, "status": "disabled"}
+    
+    try:
+        log_memory_count = sum(len(entries) for entries in chatbot_service.log_memory.values())
+        return {
+            "enabled": True,
+            "status": "active",
+            "log_files_monitored": len(chatbot_service.log_memory),
+            "total_log_entries": log_memory_count,
+            "conversation_history_length": len(chatbot_service.conversation_history),
+            "last_context_update": getattr(chatbot_service, 'last_update', None)
+        }
+    except Exception as e:
+        return {"enabled": True, "status": "error", "error": str(e)}

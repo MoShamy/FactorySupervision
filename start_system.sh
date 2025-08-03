@@ -28,6 +28,10 @@ trap cleanup SIGINT SIGTERM
 
 echo "🚀 Starting FastAPI Backend (Port 8000)..."
 cd backend
+if [ -d "../tf-venv" ]; then
+    echo "📦 Activating virtual environment..."
+    source ../tf-venv/bin/activate
+fi
 python3 -m uvicorn fastapi_server:app --host 0.0.0.0 --port 8000 --reload &
 FASTAPI_PID=$!
 cd ..
@@ -48,6 +52,10 @@ echo ""
 echo "✅ Factory Supervision System Started Successfully!"
 echo "📡 Dashboard: http://localhost:3000"
 echo "🔧 Backend API: http://localhost:8000"
+echo "💬 Chat System: Integrated with Azure OpenAI"
+echo "📹 Computer Vision: FastAPI + YOLO Integration"
+echo ""
+echo "Press Ctrl+C to stop all services..."
 echo "💬 Chat System: Integrated with Azure OpenAI"
 echo "📹 Computer Vision: FastAPI + YOLO Integration"
 echo ""

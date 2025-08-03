@@ -1,0 +1,110 @@
+{
+  "log_memory": {
+    "production_status.log": [
+      {
+        "timestamp": "2025-07-27T13:55:06.164554",
+        "content": "a Box was detected on the line at Tue Jul 22 15:34:02 2025",
+        "file": "production_status.log"
+      },
+      {
+        "timestamp": "2025-07-27T13:55:06.164561",
+        "content": "Stopped on Tue Jul 22 15:37:42 2025",
+        "file": "production_status.log"
+      },
+      {
+        "timestamp": "2025-07-27T13:55:06.164562",
+        "content": "Returned to normal operation on Tue Jul 22 15:38:22 2025",
+        "file": "production_status.log"
+      },
+      {
+        "timestamp": "2025-07-27T13:55:06.164563",
+        "content": "a Box was detected on the line at Tue Jul 22 18:37:47 2025",
+        "file": "production_status.log"
+      },
+      {
+        "timestamp": "2025-07-27T14:00:57.750079",
+        "content": "a Box was detected on the line at Tue Jul 22 15:34:02 2025",
+        "file": "production_status.log"
+      },
+      {
+        "timestamp": "2025-07-27T14:00:57.750084",
+        "content": "Stopped on Tue Jul 22 15:37:42 2025",
+        "file": "production_status.log"
+      },
+      {
+        "timestamp": "2025-07-27T14:00:57.750086",
+        "content": "Returned to normal operation on Tue Jul 22 15:38:22 2025",
+        "file": "production_status.log"
+      },
+      {
+        "timestamp": "2025-07-27T14:00:57.750087",
+        "content": "a Box was detected on the line at Tue Jul 22 18:37:47 2025",
+        "file": "production_status.log"
+      },
+      {
+        "timestamp": "2025-07-27T14:04:35.386480",
+        "content": "a Box was detected on the line at Tue Jul 22 15:34:02 2025",
+        "file": "production_status.log"
+      },
+      {
+        "timestamp": "2025-07-27T14:04:35.386485",
+        "content": "Stopped on Tue Jul 22 15:37:42 2025",
+        "file": "production_status.log"
+      },
+      {
+        "timestamp": "2025-07-27T14:04:35.386487",
+        "content": "Returned to normal operation on Tue Jul 22 15:38:22 2025",
+        "file": "production_status.log"
+      },
+      {
+        "timestamp": "2025-07-27T14:04:35.386488",
+        "content": "a Box was detected on the line at Tue Jul 22 18:37:47 2025",
+        "file": "production_status.log"
+      },
+      {
+        "timestamp": "2025-07-27T14:32:51.006005",
+        "content": "a Box was detected on the line at Tue Jul 22 15:34:02 2025",
+        "file": "production_status.log"
+      },
+      {
+        "timestamp": "2025-07-27T14:32:51.006010",
+        "content": "Stopped on Tue Jul 22 15:37:42 2025",
+        "file": "production_status.log"
+      },
+      {
+        "timestamp": "2025-07-27T14:32:51.006011",
+        "content": "Returned to normal operation on Tue Jul 22 15:38:22 2025",
+        "file": "production_status.log"
+      },
+      {
+        "timestamp": "2025-07-27T14:32:51.006012",
+        "content": "a Box was detected on the line at Tue Jul 22 18:37:47 2025",
+        "file": "production_status.log"
+      },
+      {
+        "timestamp": "2025-07-27T14:37:34.805282",
+        "content": "a Box was detected on the line at Tue Jul 22 15:34:02 2025",
+        "file": "production_status.log"
+      },
+      {
+        "timestamp": "2025-07-27T14:37:34.805289",
+        "content": "Stopped on Tue Jul 22 15:37:42 2025",
+        "file": "production_status.log"
+      },
+      {
+        "timestamp": "2025-07-27T14:37:34.805290",
+        "content": "Returned to normal operation on Tue Jul 22 15:38:22 2025",
+        "file": "production_status.log"
+      },
+      {
+        "timestamp": "2025-07-27T14:37:34.805291",
+        "content": "a Box was detected on the line at Tue Jul 22 18:37:47 2025",
+        "file": "production_status.log"
+      }
+    ]
+  },
+  "last_log_position": {
+    "production_status.log": 4
+  },
+  "last_updated": "2025-07-27T14:37:34.805294"
+}

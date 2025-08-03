@@ -1,0 +1,212 @@
+<div class="page-header"></div>
+  <div class="page-title">
+    <h1>🏭 Factory Dashboard</h1>
+    <p>Real-time overview of your factory operations</p>
+  </div>
+  <div class="page-actions">
+    <button class="btn-primary" onclick="location.reload()">
+      🔄 Refresh
+    </button>
+  </div>
+</div>
+
+<!-- Top Half: Dashboard Overview -->
+<div class="dashboard-container">
+  <div class="dashboard-overview">
+    <div class="dashboard-grid">
+      <div class="metric-card">
+        <div class="metric-header">
+          <h3>Production Status</h3>
+          <span class="status-indicator active"></span>
+        </div>
+        <div class="metric-value">
+          <span class="number">94.2%</span>
+          <span class="label">Efficiency</span>
+        </div>
+        <div class="metric-trend">
+          <span class="trend-up">↗ +2.1% from yesterday</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-header">
+          <h3>Active Machines</h3>
+          <span class="status-indicator active"></span>
+        </div>
+        <div class="metric-value">
+          <span class="number">28/30</span>
+          <span class="label">Online</span>
+        </div>
+        <div class="metric-trend">
+          <span class="trend-neutral">→ 2 machines in maintenance</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-header">
+          <h3>Quality Score</h3>
+          <span class="status-indicator active"></span>
+        </div>
+        <div class="metric-value">
+          <span class="number">98.7%</span>
+          <span class="label">Pass Rate</span>
+        </div>
+        <div class="metric-trend">
+          <span class="trend-up">↗ +0.3% from yesterday</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-header">
+          <h3>Output Today</h3>
+          <span class="status-indicator active"></span>
+        </div>
+        <div class="metric-value">
+          <span class="number">2,847</span>
+          <span class="label">Units</span>
+        </div>
+        <div class="metric-trend">
+          <span class="trend-up">↗ +127 from target</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-widgets">
+      <div class="widget camera-feeds">
+        <h3>📹 Live Camera Feeds</h3>
+        <div class="camera-grid">
+          <div class="camera-card">
+            <div class="camera-preview">
+              <div class="camera-overlay">
+                <span class="camera-name">Line A</span>
+                <span class="status-live">● LIVE</span>
+              </div>
+            </div>
+          </div>
+          <div class="camera-card">
+            <div class="camera-preview">
+              <div class="camera-overlay">
+                <span class="camera-name">Line B</span>
+                <span class="status-live">● LIVE</span>
+              </div>
+            </div>
+          </div>
+          <div class="camera-card">
+            <div class="camera-preview">
+              <div class="camera-overlay">
+                <span class="camera-name">Storage</span>
+                <span class="status-live">● LIVE</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="widget recent-alerts">
+        <h3>🚨 Recent Alerts</h3>
+        <div class="alerts-list">
+          <div class="alert-item warning">
+            <div class="alert-icon">⚠️</div>
+            <div class="alert-content">
+              <h4>Machine Maintenance Due</h4>
+              <p>Production Line B requires scheduled maintenance</p>
+              <span class="alert-time">2 hours ago</span>
+            </div>
+          </div>
+          <div class="alert-item info">
+            <div class="alert-icon">ℹ️</div>
+            <div class="alert-content">
+              <h4>Shift Change Complete</h4>
+              <p>Evening shift has taken over operations</p>
+              <span class="alert-time">4 hours ago</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Half: Cute Chat Interface -->
+  <div class="chat-section">
+    <div class="chat-container">
+      <div class="chat-header-cute">
+        <div class="chat-title">
+          <div class="ai-avatar">
+            <span class="avatar-emoji">🤖</span>
+            <div class="avatar-pulse"></div>
+          </div>
+          <div class="chat-info">
+            <h3>Factory Assistant</h3>
+            <p class="status-text">
+              <span class="status-dot online"></span>
+              Online and ready to help!
+            </p>
+          </div>
+        </div>
+        <div class="chat-actions">
+          <button class="chat-action-btn" title="Clear chat">
+            <span>🧹</span>
+          </button>
+          <button class="chat-action-btn" title="Settings">
+            <span>⚙️</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="chat-messages-container" id="chatMessages">
+        <div class="welcome-message">
+          <div class="welcome-card">
+            <div class="welcome-icon">👋</div>
+            <h4>Hey there, factory supervisor!</h4>
+            <p>I'm your AI assistant, ready to help with production monitoring, analytics, and system insights. What would you like to know?</p>
+            <div class="quick-actions">
+              <button class="quick-action-btn" data-message="What's the current production status?">
+                📊 Production Status
+              </button>
+              <button class="quick-action-btn" data-message="Show me recent alerts">
+                🚨 Recent Alerts
+              </button>
+              <button class="quick-action-btn" data-message="Analyze production trends">
+                📈 Trends Analysis
+              </button>
+              <button class="quick-action-btn" data-message="Check system health">
+                💚 System Health
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-input-container">
+        <div class="chat-input-wrapper">
+          <div class="input-decoration">
+            <span class="input-icon">💭</span>
+          </div>
+          <textarea 
+            id="chatInput" 
+            placeholder="Ask me anything about your factory... 🏭"
+            rows="1"
+            maxlength="1000"
+          ></textarea>
+          <div class="input-actions">
+            <button class="emoji-btn" title="Add emoji">😊</button>
+            <button class="send-btn" id="sendButton" title="Send message">
+              <span class="send-icon">✨</span>
+            </button>
+          </div>
+        </div>
+        <div class="input-footer">
+          <span class="typing-indicator" id="typingIndicator" style="display: none;">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            AI is thinking...
+          </span>
+          <span class="char-counter">
+            <span id="charCount">0</span>/1000
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -84,7 +84,8 @@ class ConveyorVisionSystem:
         self.bounds = 0
         self.output_log_path = ""
         self.frames = []
-        self.anomalies = {}
+        self.anomaly_objects = {}  # Keep both names for compatibility
+        self.anamoly = {}  # Your original naming
 
 
 
@@ -141,7 +142,10 @@ class ConveyorVisionSystem:
         )
         return results
     
-    def _frames_create(frames,output_path, fps=20):
+    def _frames_create(self, frames, output_path, fps=20):
+        """Create video from buffered frames"""
+        if not frames:
+            return
         height, width, _ = frames[0].shape
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # Use 'XVID' for .avi
         out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
@@ -182,10 +186,10 @@ class ConveyorVisionSystem:
     
     def _process_anomaly_object(self, current_obj, obj_id, obj_class):
         """Process objects that are not in target classes (anomalies)"""
-        if obj_id not in self.anomaly_objects:
+        if obj_id not in self.anamoly:
             self._log_anomaly(obj_class)
             current_obj.detect = True
-            self.anomaly_objects[obj_id] = current_obj
+            self.anamoly[obj_id] = current_obj
     
     def _check_line_crossing(self, current_obj, prev_obj, obj_id):
         """Check if object crossed the virtual line"""
@@ -196,8 +200,18 @@ class ConveyorVisionSystem:
         current_coord = current_obj.centery if self.is_horizontal_line else current_obj.centerx
         virtual_line_pos = self.line_y if self.is_horizontal_line else self.line_x
         
-        # Check if object crossed the line (from above/left to below/right)
-        if (prev_coord < virtual_line_pos) and (current_coord >= virtual_line_pos):
+        # Enhanced crossing detection - handles both simple and complex conditions
+        # Simple condition: crossing from one side to the other
+        simple_condition = (prev_coord < virtual_line_pos) and (current_coord >= virtual_line_pos)
+        
+        # Complex condition: for corner-based detection (from your original code)
+        complex_condition = ((prev_obj.centerx < self.line_x or prev_obj.centery < self.line_y) and 
+                           (current_obj.centerx >= self.line_x or current_obj.centery >= self.line_y))
+        
+        # Use simple condition by default, but can be extended
+        crossing_detected = simple_condition
+        
+        if crossing_detected:
             if not prev_obj.detect:
                 self.obj_count += 1
             prev_obj.detect = True
@@ -221,7 +235,7 @@ class ConveyorVisionSystem:
     def _log_anomaly(self, obj_class):
         """Log anomaly detection to file"""
         with open(self.output_log_path, "a") as f:
-            f.write(f"An anomaly '{self.model.names[int(obj_class)]}' was detected on the line at {time.ctime(time.time())}\n")
+            f.write(f"a {self.model.names[int(obj_class)]} was detected on the line at {time.ctime(time.time())}\n")
     
     def analyze_system_status(self):
         """Analyze system status based on object count"""
@@ -234,7 +248,7 @@ class ConveyorVisionSystem:
         
         print(f"Object count in time window: {self.obj_count}")
         
-        # Determine system status
+        # Determine system status with enhanced logic
         if self.obj_count >= (self.obj_per_time - self.bounds) and self.obj_count <= (self.obj_per_time + self.bounds):
             if not status.functioning:
                 self._log_status("Returned to normal operation", readable_time)
@@ -247,14 +261,31 @@ class ConveyorVisionSystem:
             functioning = False
         else:
             self._log_status("Stopped", readable_time)
-            functioning = False
-            self._frames_create(self.frames[frame_count - 60 : frame_count],"out_stop.mp4", fps=20)
-            with open(self.out_video, "a") as f:
+            # Create video from buffered frames when stopped
+            if len(self.frames) >= 60:
+                self._frames_create(self.frames[max(0, self.frame_count - 60):self.frame_count], "out_stop.mp4", fps=20)
+            with open(self.output_log_path, "a") as f:
                 f.write(f"Stopped on {readable_time}\n")
             functioning = False
 
-        # Notify backend if status changed
-        self._notify_status_change(functioning)
+        # Enhanced status change notification
+        print(f"🔄 Current status: {functioning}, Global status: {status.functioning}")
+        
+        if functioning != status.functioning:
+            try:
+                print(f"🔄 Notifying backend of status change: {functioning}, while global is {status.functioning}")
+                status.functioning = functioning
+                print(f"After status change: {functioning}, while global is {status.functioning}")
+                
+                # Send request to backend
+                requests.post(
+                    "http://localhost:8001/internal-update-status", 
+                    json={"functioning": functioning}
+                )
+            except Exception as e:
+                print(f"❌ Failed to notify backend: {e}")
+        
+        print(f"Final functioning status: {functioning}")
         
         # Reset counters
         self.obj_count = 0
@@ -266,24 +297,6 @@ class ConveyorVisionSystem:
         """Log status change to file"""
         with open(self.output_log_path, "a") as f:
             f.write(f"{status_msg} on {timestamp}\n")
-    
-    def _notify_status_change(self, functioning):
-        """Notify backend of status change"""
-        print(f"🔄 Current status: {functioning}, Global status: {status.functioning}")
-        
-        if functioning != status.functioning:
-            try:
-                print(f"🔄 Notifying backend of status change: {functioning}")
-                status.functioning = functioning
-                print(f"After status change - Current: {functioning}, Global: {status.functioning}")
-                
-                # Send request to backend
-                requests.post(
-                    "http://localhost:8001/internal-update-status", 
-                    json={"functioning": functioning}
-                )
-            except Exception as e:
-                print(f"❌ Failed to notify backend: {e}")
     
     def add_frame_overlay(self, frame):
         """Add overlay information to frame"""
@@ -328,6 +341,13 @@ class ConveyorVisionSystem:
             if not ret:
                 break
             
+            # Add frame to buffer for potential video creation
+            self.frames.append(frame.copy())
+            
+            # Keep only last 60 frames to manage memory
+            if len(self.frames) > 60:
+                self.frames.pop(0)
+            
             # Detect objects
             results = self.detect_objects(frame)
             
@@ -364,19 +384,23 @@ class ConveyorVisionSystem:
         stats = self.get_crossing_statistics()
         print(f"📊 Final Statistics: {stats}")
         
+        # Print standard deviation as in original code
+        if len(self.time_between_crossings) > 0:
+            print(f"📊 Time between crossings std: {np.array(self.time_between_crossings).std()}")
+        
         # Cleanup
         self.cleanup()
 
 
-def OperationStatus(video_path, out_path, line, fx,fy,con_line,targets, obj_per_time, time_th, bounds):
+def OperationStatus(video_path, out_path, line, fx, fy, con_line, targets, obj_per_time, time_th, bounds):
     """Legacy function wrapper for backward compatibility"""
     vision_system = ConveyorVisionSystem()
     vision_system.run_monitoring(
         video_path=video_path,
         output_log_path=out_path,
-        line_factor=factor,
+        line_factor=fx if not line else fy,  # Use fx for vertical, fy for horizontal
         is_horizontal_line=line,
-        cross_threshold=cross_threshold,
+        cross_threshold=0.5,  # Default cross threshold
         targets=targets,
         obj_per_time=obj_per_time,
         time_threshold=time_th,
